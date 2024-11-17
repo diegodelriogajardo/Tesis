@@ -1,6 +1,7 @@
 // index.js
 import dotenv from 'dotenv';
 dotenv.config();
+
 import express from 'express';
 //import pacienteRoutes from './routes/paciente.routes.js';
 import tratamientoRoutes from './routes/tratamiento.routes.js';
@@ -23,10 +24,11 @@ import Ficha from './models/ficha.js';
 import Cita from './models/citas.js';
 import Usuario from './models/usuario.js';
 
-
+import cors from'cors'
 const app = express();
 const PORT = 3000;
 
+app.use(cors())
 // Conecta con la base de datos
 sequelize.authenticate()
     .then(() => {

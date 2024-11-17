@@ -1,5 +1,7 @@
 import dotenv from 'dotenv';
+
 dotenv.config();
+
 
 
 import jwt from 'jsonwebtoken';
@@ -10,7 +12,7 @@ const secretKey = process.env.SECRETO;
 
 
 export function generateToken(payload) {
-    console.log(secretKey)
+    //console.log(secretKey)
     const token =jwt.sign(payload, secretKey, { expiresIn: '1h' });
     return token
 }

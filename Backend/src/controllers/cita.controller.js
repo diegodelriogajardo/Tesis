@@ -33,7 +33,7 @@ const obtenerCitas = async (req, res) => {
 // Controlador para crear una nueva cita asociada a un paciente y un especialista
 const crearCita = async (req, res) => {
     try {
-        const { id_paciente, id_especialista, fecha_cita, estado } = req.body;
+        const { id_paciente, id_especialista, fecha_cita, estado, title } = req.body;
 
         // Verificar que el paciente y el especialista existen
         const paciente = await Usuario.findByPk(id_paciente);
@@ -52,7 +52,8 @@ const crearCita = async (req, res) => {
                 id_paciente,
                 id_especialista,
                 fecha_cita,
-                estado
+                estado,
+                title
             });
     
             res.status(201).json(cita);

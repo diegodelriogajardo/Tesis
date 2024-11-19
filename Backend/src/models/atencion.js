@@ -2,6 +2,7 @@ import { DataTypes } from 'sequelize';
 import { sequelize } from '../database/database.js';
 import Ficha from './ficha.js';
 import Diagnostico from './diagnostico.js';
+import Tratamiento from './tratamiento.js';
 
 // Modelo para la tabla Atencion
 const Atencion = sequelize.define('atencion', {
@@ -33,18 +34,21 @@ const Atencion = sequelize.define('atencion', {
 
 (async () => {
     const Diagnostico = (await import('./diagnostico.js')).default;
+    const Usuario = (await import('./usuario.js')).default;
     //const Especialista = (await import('./especialista.js')).default;
 
     // Relaciones entre modelos
     //Especialista.hasMany(Atencion, { foreignKey: 'id_especialista', sourceKey: 'id_especialista' });
     //Atencion.belongsTo(Especialista, { foreignKey: 'id_especialista', targetKey: 'id_especialista' });
-
+    Usuario.hasMany(Atencion, { foreignKey: 'id_especialista', sourceKey: 'id_usuario' })
+    Usuario.hasMany(Atencion, { foreignKey: 'id_paciente', sourceKey: 'id_usuario' })
     // Relaciones con otros modelos
     Ficha.hasMany(Atencion, { foreignKey: 'id_ficha', sourceKey: 'id_ficha' });
     Atencion.belongsTo(Ficha, { foreignKey: 'id_ficha', targetKey: 'id_ficha' });
 
     Atencion.hasMany(Diagnostico, { foreignKey: 'id_atencion', sourceKey: 'id_atencion' });
     Diagnostico.belongsTo(Atencion, { foreignKey: 'id_atencion', targetKey: 'id_atencion' });
+    //Tratamiento.belongsTo(Atencion, { foreignKey: 'id_atencion', targetKey: 'id_atencion' });
 })();
 
 export default Atencion;

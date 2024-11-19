@@ -78,6 +78,7 @@ Cita.belongsTo(Usuario,{ foreignKey: 'id_especialista', targetKey: 'id_usuario',
 Usuario.hasMany(Atencion, { foreignKey: 'id_especialista', sourceKey: 'id_usuario', constraints: false });
 Usuario.hasMany(Tratamiento, { foreignKey: 'id_especialista', sourceKey: 'id_usuario', constraints: false });
 Atencion.belongsTo(Usuario, { foreignKey: 'id_especialista', targetKey: 'id_usuario', constraints: false });
+Atencion.belongsTo(Usuario, { foreignKey: 'id_paciente', targetKey: 'id_usuario', constraints: false });
 Tratamiento.belongsTo(Usuario, { foreignKey: 'id_especialista', targetKey: 'id_usuario', constraints: false });
 })();
 

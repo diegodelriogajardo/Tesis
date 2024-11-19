@@ -1,3 +1,5 @@
+import dotenv from 'dotenv'
+dotenv.config();
 import Usuario from "../models/usuario.js";
 import Atencion from "../models/atencion.js";
 import Ficha from "../models/ficha.js";
@@ -25,7 +27,7 @@ const obtenerUsuarios = async (req, res) => {
 // Controlador para crear un nuevo usuario
 const crearUsuario = async (req, res) => {
   try {
-    const { nombre, especialidad, telefono, email, password, rol, rut, fechaNacimiento, gradoDependencia, visible } = req.body;
+    const { nombre, especialidad, telefono, direccion, email, password, rol, rut, fechaNacimiento, gradoDependencia, visible } = req.body;
 
     const hashedPassword = await hashPassword(password);
     
@@ -33,6 +35,7 @@ const crearUsuario = async (req, res) => {
       nombre,
       especialidad,
       telefono,
+      direccion,
       email,
       password: hashedPassword,
       rol,
@@ -52,13 +55,7 @@ const crearUsuario = async (req, res) => {
 const obtenerUsuarioPorId = async (req, res) => {
   const result = Number(req.params.id);
   try {
-    const usuario = await Usuario.findByPk(result, {
-      include: [
-        { model: Ficha, where: { rut: usuario.rut }, required: false },
-        { model: Tratamiento, required: false },
-        { model: Atencion, where: { id_especialista: usuario.id_usuario }, required: false }
-      ]
-    });
+    const usuario = await Usuario.findByPk(result);
 
     if (!usuario) {
       return res.status(404).json({ error: "Usuario no encontrado" });

@@ -2,9 +2,10 @@ import express from 'express';
 import {
     obtenerAtenciones,
     crearAtencion,
-    obtenerAtencionPorId,
+    obtenerAtencionesPorPaciente,
     actualizarAtencion,
-    eliminarAtencion
+    eliminarAtencion,
+    getAtencionDetalles
 } from '../controllers/atencion.controller.js';
 
 import { authentication } from '../middleware/auth.js';
@@ -18,7 +19,9 @@ router.get('/',authentication, obtenerAtenciones);
 router.post('/',authentication, crearAtencion);
 
 // Ruta para obtener una atención por su ID
-router.get('/:id',authentication, obtenerAtencionPorId);
+router.get('/:id',authentication, obtenerAtencionesPorPaciente);
+
+router.get('/detalles/:id',authentication, getAtencionDetalles);
 
 // Ruta para actualizar una atención por su ID
 router.put('/:id',authentication, actualizarAtencion);

@@ -3,6 +3,9 @@ import Atencion from '../models/atencion.js';
 import Ficha from '../models/ficha.js';
 import Diagnostico from '../models/diagnostico.js';
 import Usuario from '../models/usuario.js';
+import Tratamiento from '../models/tratamiento.js';
+
+
 
 // Controlador para obtener todas las atenciones con información de los especialistas, fichas y diagnósticos asociados
 const obtenerAtenciones = async (req, res) => {
@@ -36,7 +39,7 @@ const crearAtencion = async (req, res) => {
         const { id_especialista, id_ficha, fecha_atencion, resumen, descripcion } = req.body;
 
         // Verificar que el especialista y la ficha existen
-        const especialista = await Especialista.findByPk(id_especialista);
+        const especialista = await Usuario.findByPk(id_especialista);
         if (!especialista) {
             return res.status(404).json({ error: 'Especialista no encontrado' });
         }
@@ -61,7 +64,7 @@ const crearAtencion = async (req, res) => {
 };
 
 // Controlador para obtener una atención por su ID con información de especialista, ficha y diagnósticos
-const obtenerAtencionPorId = async (req, res) => {
+/*const obtenerAtencionPorId = async (req, res) => {
     const result = Number(req.params.id);
     try {
         const atencion = await Atencion.findByPk(result, {
@@ -85,7 +88,80 @@ const obtenerAtencionPorId = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: 'Error al obtener la atención' });
     }
+};*/
+
+const obtenerAtencionesPorPaciente = async (req, res) => {
+    const pacienteId = Number(req.params.id);  // ID del paciente recibido desde la URL
+    console.log("ID del paciente recibido:", pacienteId);  // Verificar el ID del paciente recibido
+
+    try {
+        // Buscar todas las atenciones asociadas al paciente
+        const atenciones = await Atencion.findAll({
+            where: {
+                id_paciente: pacienteId  // Filtrar por el id del paciente
+            },
+            include: [
+                {
+                    model: Usuario,
+                    attributes: ['nombre', 'especialidad']
+                },
+                {
+                    model: Ficha,
+                    attributes: ['fecha']
+                }
+            ]
+        });
+
+        if (!atenciones || atenciones.length === 0) {
+            return res.status(404).json({ error: 'No se encontraron atenciones para este paciente' });
+        }
+
+        console.log("Atenciones encontradas:", atenciones);  // Verificar las atenciones encontradas
+
+        res.json(atenciones);  // Responder con la lista de atenciones
+    } catch (error) {
+        console.error("Error al obtener las atenciones:", error);  // Verificar el error en consola
+        res.status(500).json({ error: 'Error al obtener las atenciones del paciente' });
+    }
 };
+
+
+
+
+const getAtencionDetalles = async (req, res) => {
+    const { id } = req.params; // ID de la atención
+
+    try {
+        // Buscar la atención con sus relaciones
+        const atencion = await Atencion.findOne({
+            where: { id_atencion: id },
+            include: [
+                {
+                    model: Diagnostico,
+                    include: [
+                        {
+                            model: Tratamiento
+                            
+                        },
+                    ],
+                },
+            ],
+        });
+
+        if (!atencion) {
+            return res.status(404).json({ message: "Atención no encontrada" });
+        }
+
+        // Retornar los datos al frontend
+        res.json(atencion);
+    } catch (error) {
+        console.error("Error al obtener los detalles de la atención:", error);
+        res.status(500).json({ message: "Error al obtener los detalles de la atención" });
+    }
+};
+
+
+
 
 // Controlador para actualizar una atención existente
 const actualizarAtencion = async (req, res) => {
@@ -126,7 +202,8 @@ const eliminarAtencion = async (req, res) => {
 export {
     obtenerAtenciones,
     crearAtencion,
-    obtenerAtencionPorId,
+    obtenerAtencionesPorPaciente,
     actualizarAtencion,
-    eliminarAtencion
+    eliminarAtencion,
+    getAtencionDetalles
 };

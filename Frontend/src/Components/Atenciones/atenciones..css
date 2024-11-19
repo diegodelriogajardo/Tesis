@@ -1,0 +1,41 @@
+.atenciones {
+    padding: 0;
+    background-color: #f8f9fa; /* Fondo claro */
+  }
+  
+  h3 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #495057;
+  }
+  
+  .table th, .table td {
+    text-align: center;
+    vertical-align: middle;
+  }
+  
+  .table-striped tbody tr:nth-child(odd) {
+    background-color: #f1f1f1;
+  }
+  
+  .table-hover tbody tr:hover {
+    background-color: #e9ecef;
+  }
+  
+  button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+  
+  button:hover {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+  }
+  
+  @media (max-width: 767px) {
+    .table {
+      font-size: 0.9rem;
+    }
+  }
+  

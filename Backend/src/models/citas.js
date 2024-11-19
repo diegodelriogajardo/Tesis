@@ -18,6 +18,9 @@ const Cita = sequelize.define('cita', {
     },
     estado: {
         type: DataTypes.TEXT
+    },
+    title:{
+        type: DataTypes.TEXT
     }
 }, {
     timestamps: false

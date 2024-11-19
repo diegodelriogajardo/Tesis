@@ -1,0 +1,21 @@
+.check{
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    width: 97%;
+}
+.checkbox{
+    width: 15px;
+}
+input{
+    align-self: stretch;
+    border-radius: 8px;
+
+}
+.contenedor{
+    height: 600px;
+    padding: 30px;
+}
+p{
+    margin: 5px;
+}

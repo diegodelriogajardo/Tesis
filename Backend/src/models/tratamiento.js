@@ -4,6 +4,7 @@ import { sequelize } from '../database/database.js';
 //import Paciente from './paciente.js';
 import Diagnostico from './diagnostico.js';
 import Usuario from './usuario.js';
+import Atencion from './atencion.js';
 
 const Tratamiento = sequelize.define('tratamiento', {
     id_tratamiento: {
@@ -41,6 +42,7 @@ const Tratamiento = sequelize.define('tratamiento', {
     // Un diagnóstico puede prescribir muchos tratamientos
     Diagnostico.hasMany(Tratamiento, { foreignKey: 'id_diagnostico', sourceKey: 'id_diagnostico' });
     Tratamiento.belongsTo(Diagnostico, { foreignKey: 'id_diagnostico', targetKey: 'id_diagnostico' });
+
 
 })();
 

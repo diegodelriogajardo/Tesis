@@ -1,168 +1,199 @@
 import React, { useEffect, useState } from "react";
-import { Calendar, momentLocalizer,Views } from "react-big-calendar";
+import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-const localizer = momentLocalizer(moment);
+import api from "../../api/axios";
 import { useAuth } from "../../auth/auth";
+import { Container, Nav, Button, Form, FormSelect, Row, Col } from "react-bootstrap";
 
+import './calendario.css'
+import { Menu } from "../Navbar/Menu";
 
-
+const localizer = momentLocalizer(moment);
 
 const Calendario = () => {
-  const usuario=localStorage.getItem('usuario');
-  const newUser= JSON.parse(usuario);
-  const [doctors, setDoctors] = useState([
-    { id: newUser.id, nombre: newUser.nombre, availability: [] }
-  ]);
-  if(newUser.rol!=="especialista"){
-    setDoctors(null);
-  }
-
-  const {obtenerRol}=useAuth();
-  const rol= obtenerRol();
-  const [selectedDoctor, setSelectedDoctor] = useState(doctors[0]);
+  const [doctors, setDoctors] = useState([]);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [patientAppointments, setPatientAppointments] = useState([]);
-  const [isDoctorMode, setIsDoctorMode] = useState(true);
-  //post('/cita',headers:Authorization{`Bearer ${localStorage.getItem('token')}`},body:{id:doctor1.nombre})
-  //localStorage solo almacenan string
-  // Función para agregar disponibilidad (modo doctor) cambiar logica para que paciente genere las "citas"
-  const handleAddAvailability = ({ start, end }) => {
-    const title = window.prompt(
-      `Ingrese el título de la disponibilidad para ${selectedDoctor.nombre}:`
-    );
-    if (title) {
-      const newAvailability = { start, end, title: `Disponible: ${title}` };
+  const usuario = localStorage.getItem("usuario");
+  let newUser1 = null;
+  let rol = null;
 
-      const updatedDoctors = doctors.map((doctor) =>
-        doctor.id === selectedDoctor.id
-          ? {
-              ...doctor,
-              availability: [...doctor.availability, newAvailability],
-            }
-          : doctor
-      );
+if (usuario) {
+  try {
+    newUser1 = JSON.parse(usuario); // Convertir a objeto
+    rol = newUser1?.rol || null;   // Extraer el rol si existe
+  } catch (error) {
+    console.error("Error al analizar el JSON del usuario:", error);
+  }
+} else {
+  console.warn("No se encontró el usuario en el localStorage");
+}
+  const newUser = JSON.parse(usuario);
 
-      setDoctors(updatedDoctors);
-      setSelectedDoctor(
-        updatedDoctors.find((doc) => doc.id === selectedDoctor.id)
-      );
+  useEffect(() => {
+    const fetchDoctorsAndAppointments = async () => {
+      try {
+        const response = await api.get("/usuario", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
 
-      console.log("Disponibilidad agregada:", newAvailability);
-    }
-  };
+        if (response.data && response.data.length > 0) {
+          const specialists = response.data.filter((user) => user.especialidad);
+          setDoctors(specialists);
 
-  // Función para reservar una cita (modo paciente)
-  const handleBookAppointment = ({ start, end }) => {
-    console.log("estoy aqui");
-    const isAvailable = selectedDoctor.availability.some(
-      (event) =>
-        moment(start).isBetween(event.start, event.end, null, "[)") &&
-        moment(end).isBetween(event.start, event.end, null, "(]")
-    );
-
-    if (isAvailable) {
-      const title = window.prompt("Ingrese su nombre para la cita:");
-      if (title) {
-        const appointment = {
-          start,
-          end,
-          title: `Cita: ${title}`,
-          doctorId: selectedDoctor.id,
-        };
-
-        setPatientAppointments((prev) => [...prev, appointment]);
-        alert("Cita agendada correctamente.");
-        console.log("Cita agendada:", appointment);
-      }
-    } else {
-      alert("El horario no está disponible.");
-    }
-  };
-
-  // Determinar los eventos mostrados
-  const displayedEvents = isDoctorMode
-    ? selectedDoctor.availability
-    : [
-        ...selectedDoctor.availability.map((event) => ({
-          ...event,
-          title: `Disponible - ${event.title}`,
-        })),
-        ...patientAppointments.filter(
-          (appointment) => appointment.doctorId === selectedDoctor.id
-        ),
-      ];
-
-
-
-      useEffect(()=>{
-        //console.log(rol)
-        if(rol==="paciente"){
-          setIsDoctorMode(false)
-        }else{
-          setIsDoctorMode(true)
+          if (specialists.length > 0) {
+            setSelectedDoctor(specialists[0]);
+          }
         }
-      },[])//corchetes vacio hace que se llame solo como a una funcion void main en java 
 
+        const appointmentsResponse = await api.get("/citas", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
 
+        if (appointmentsResponse.data) {
+          const mappedAppointments = appointmentsResponse.data.map((cita) => ({
+            start: new Date(cita.fecha_cita),
+            end: moment(new Date(cita.fecha_cita)).add(1, "hour").toDate(),
+            title: cita.title,
+            id_especialista: cita.id_especialista,
+            id_paciente: cita.id_paciente,
+          }));
+
+          setPatientAppointments(mappedAppointments);
+        }
+      } catch (error) {
+        console.error("Error al cargar datos:", error);
+      }
+    };
+
+    fetchDoctorsAndAppointments();
+  }, []);
+
+  const handleBookAppointment = async ({ start }) => {
+    if (!selectedDoctor) {
+      alert("Seleccione un especialista antes de reservar una cita.");
+      return;
+    }
+
+    const endForzado = moment(start).add(1, "hour").toDate();
+    const isTimeAvailable = !patientAppointments.some(
+      (appointment) =>
+        appointment.id_especialista === selectedDoctor.id_usuario &&
+        moment(start).isSame(appointment.start)
+    );
+
+    if (!isTimeAvailable) {
+      alert("El horario seleccionado ya está reservado.");
+      return;
+    }
+
+    const title = window.prompt("Ingrese su nombre para la cita:");
+    if (title) {
+      const appointment = {
+        start,
+        end: endForzado,
+        title: `Cita: ${title}`,
+        id_especialista: selectedDoctor.id_usuario,
+        id_paciente: newUser.id_usuario,
+      };
+
+      setPatientAppointments((prev) => [...prev, appointment]);
+
+      try {
+        await api.post(
+          "/citas",
+          {
+            id_paciente: newUser.id_usuario,
+            id_especialista: selectedDoctor.id_usuario,
+            fecha_cita: appointment.start.toISOString(),
+            estado: "Creado",
+            title: appointment.title,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+      } catch (err) {
+        console.error("Ocurrió un problema:", err);
+      }
+    }
+  };
+
+  const displayedEvents = patientAppointments.filter(
+    (appointment) => appointment.id_especialista === (selectedDoctor?.id_usuario || null)
+  );
 
   return (
-    <div>
+    <Container fluid className="calendario px-0">
+  {/* Navbar */}
+   <Menu/> 
+  {/* Main Content */}
+  <div className="d-flex mb-4 justify-content-center">
 
-      {rol==="paciente"&&(<h1>Calendario de citas</h1>)}
-      {rol==="especialista"&&(<h1>Calendario de Disponibilidad</h1>)}
-      {/* <h1>Calendario de Disponibilidad y Citas</h1> */}
 
-      {/* Selector de Modo */}
-      {/* <div style={{ marginBottom: "10px" }}>
-        <button onClick={() => setIsDoctorMode(true)}>Modo Doctor</button>
-        <button onClick={() => setIsDoctorMode(false)}>Modo Paciente</button>
-      </div> */}
+    <Col md={6} sm={12}>
+      <h3 className="text-center mb-4">Seleccione un Especialista</h3>
+      <Form>
+        <Form.Group>
+          <FormSelect
+            value={selectedDoctor?.id_usuario || ""}
+            onChange={(e) =>
+              setSelectedDoctor(
+                doctors.find((doc) => doc.id_usuario === parseInt(e.target.value))
+              )
+            }
+          >
+            {doctors.map((doctor) => (
+              <option key={doctor.id_usuario} value={doctor.id_usuario}>
+                {doctor.nombre}
+              </option>
+            ))}
+          </FormSelect>
+        </Form.Group>
+      </Form>
+    </Col>
+ 
 
-      {/* Selector de Doctor */}
-      {rol==="paciente" &&(
-      <div style={{ marginBottom: "10px" }}>
-        <label>Seleccione un doctor: </label>
-        <select
-          value={selectedDoctor.id}
-          onChange={(e) =>
-            setSelectedDoctor(
-              doctors.find((doc) => doc.id === parseInt(e.target.value))
-            )
-          }
-        >
-          {doctors.map((doctor) => (
-            <option key={doctor.id} value={doctor.id}>
-              {doctor.nombre}
-            </option>
-          ))}
-        </select>
-      </div>
-      )
-      }
 
-      {/* Calendario */}
-      <div style={{ height: "80vh" }}>
+  </div>
+<div className="d-flex">
+
+    <Col>
+      <h3 className="mb-4">Calendario de Citas</h3>
+      <div  style={{ height: "80vh", padding:"12px" }}>
         <Calendar
           localizer={localizer}
           events={displayedEvents}
           startAccessor="start"
           endAccessor="end"
           selectable={true}
-          onSelectSlot={
-            isDoctorMode ? handleAddAvailability : handleBookAppointment
-          }
-          onSelectEvent={isDoctorMode ? handleAddAvailability : handleBookAppointment}
+          onSelectSlot={handleBookAppointment}
           style={{ height: 500 }}
-          // Establecer el horario de inicio y fin del calendario
-          min={moment().set({ hours: 8, minutes: 0, seconds: 0, milliseconds: 0 })}
-          max={moment().set({ hours: 17, minutes: 0, seconds: 0, milliseconds: 0 })}
-          views={["week", "day", "agenda"]} // Configuración de vistas
-          defaultView={Views.WEEK} // Vista predeterminada
-
-
+          min={moment()
+            .set({ hours: 8, minutes: 0, seconds: 0, milliseconds: 0 })
+            .toDate()}
+          max={moment()
+            .set({ hours: 17, minutes: 0, seconds: 0, milliseconds: 0 })
+            .toDate()}
+          views={["week", "day", "agenda"]}
+          defaultView={Views.WEEK}
+          step={60}
+          timeslots={1}
         />
       </div>
-    </div>
+    </Col>
+
+
+</div>
+</Container>
+
   );
 };
 

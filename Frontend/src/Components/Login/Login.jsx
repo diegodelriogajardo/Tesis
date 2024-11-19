@@ -27,6 +27,8 @@ const Login = () => {
       if (data.token) {
         // Si obtienes un token, lo guardas y rediriges
         login(data.token);
+        console.log("email:",email)
+    
         navigate("/calendario"); // Redirige al calendario
       } else {
         // Manejo de error si el login falla

@@ -41,7 +41,7 @@ const Atencion = sequelize.define('atencion', {
     //Especialista.hasMany(Atencion, { foreignKey: 'id_especialista', sourceKey: 'id_especialista' });
     //Atencion.belongsTo(Especialista, { foreignKey: 'id_especialista', targetKey: 'id_especialista' });
     Usuario.hasMany(Atencion, { foreignKey: 'id_especialista', sourceKey: 'id_usuario' })
-    Usuario.hasMany(Atencion, { foreignKey: 'id_paciente', sourceKey: 'id_usuario' })
+    //Usuario.hasMany(Atencion, { foreignKey: 'id_paciente', sourceKey: 'id_usuario' })
     // Relaciones con otros modelos
     Ficha.hasMany(Atencion, { foreignKey: 'id_ficha', sourceKey: 'id_ficha' });
     Atencion.belongsTo(Ficha, { foreignKey: 'id_ficha', targetKey: 'id_ficha' });

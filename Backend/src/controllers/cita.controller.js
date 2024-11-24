@@ -10,11 +10,13 @@ const obtenerCitas = async (req, res) => {
             include: [
                 {
                     model: Usuario,
-                    attributes: ['nombre', 'rut','rol']
+                    as: 'Paciente', // Alias para el paciente
+                    attributes: ['nombre', 'rut', 'rol']
                 },
                 {
                     model: Usuario,
-                    attributes: ['nombre', 'especialidad','rol']
+                    as: 'Especialista', // Alias para el especialista
+                    attributes: ['nombre', 'especialidad', 'rol']
                 }
             ]
         });
@@ -70,16 +72,19 @@ const crearCita = async (req, res) => {
 // Controlador para obtener una cita por su ID con información de paciente y especialista
 const obtenerCitaPorId = async (req, res) => {
     const result = Number(req.params.id);
+
     try {
         const cita = await Cita.findByPk(result, {
             include: [
                 {
                     model: Usuario,
-                    attributes: ['nombre', 'rut','rol']
+                    as: 'Paciente', // Alias para el paciente
+                    attributes: ['nombre', 'rut', 'rol']
                 },
                 {
                     model: Usuario,
-                    attributes: ['nombre', 'especialidad','rol']
+                    as: 'Especialista', // Alias para el especialista
+                    attributes: ['nombre', 'especialidad', 'rol']
                 }
             ]
         });
@@ -90,27 +95,39 @@ const obtenerCitaPorId = async (req, res) => {
 
         res.json(cita);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: 'Error al obtener la cita' });
     }
 };
 
+
 // Controlador para actualizar una cita existente
 const actualizarCita = async (req, res) => {
-    const result = Number(req.params.id);
-    try {
-        const [actualizado] = await Cita.update(req.body, {
-            where: { id_cita: result }
-        });
+    const { id } = req.params; // Obtener ID de la cita desde los parámetros
+    const { title, fecha, hora } = req.body; // Datos enviados desde el frontend
 
-        if (!actualizado) {
+    try {
+        const cita = await Cita.findByPk(id);
+        if (!cita) {
             return res.status(404).json({ error: 'Cita no encontrada' });
         }
 
-        res.json({ mensaje: 'Cita actualizada correctamente' });
+        // Combinar fecha y hora en el formato requerido
+        const nuevaFechaHora = `${fecha} ${hora}:00`;
+
+        // Actualizar los campos relevantes
+        cita.title = title;
+        cita.fecha_cita = nuevaFechaHora; // Asegúrate de que el campo en la BD coincida
+        await cita.save();
+
+        res.status(200).json({ message: 'Cita actualizada correctamente', cita });
     } catch (error) {
+        console.error('Error al actualizar la cita:', error);
         res.status(500).json({ error: 'Error al actualizar la cita' });
     }
 };
+
+
 
 // Controlador para eliminar una cita
 const eliminarCita = async (req, res) => {

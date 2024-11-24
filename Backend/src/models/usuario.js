@@ -71,8 +71,11 @@ Usuario.hasMany(Ficha, { foreignKey: 'rut', sourceKey: 'rut', constraints: false
 Usuario.hasMany(Tratamiento, { foreignKey: 'id_paciente', sourceKey: 'id_usuario', constraints: false });
 Ficha.belongsTo(Usuario, { foreignKey: 'rut', targetKey: 'rut', constraints: false });
 Tratamiento.belongsTo(Usuario, { foreignKey: 'id_paciente', targetKey: 'id_usuario', constraints: false });
-Cita.belongsTo(Usuario,{ foreignKey: 'id_paciente', targetKey: 'id_usuario', constraints: false })
-Cita.belongsTo(Usuario,{ foreignKey: 'id_especialista', targetKey: 'id_usuario', constraints: false })
+// Relación con Usuario (como paciente)
+Cita.belongsTo(Usuario, { as: 'Paciente', foreignKey: 'id_paciente' });
+
+// Relación con Usuario (como especialista)
+Cita.belongsTo(Usuario, { as: 'Especialista', foreignKey: 'id_especialista' });
 
 // Si el usuario es un "especialista", puede tener varias atenciones y tratamientos
 Usuario.hasMany(Atencion, { foreignKey: 'id_especialista', sourceKey: 'id_usuario', constraints: false });

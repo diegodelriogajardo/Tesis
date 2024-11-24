@@ -27,11 +27,12 @@ const obtenerFichas = async (req, res) => {
 
 // Controlador para crear una nueva ficha asociada a un paciente
 const crearFicha = async (req, res) => {
+    console.log(req.body);
     try {
-        const { id_paciente, fecha, resumen, observaciones } = req.body;
+        const { id_paciente, fecha, resumen, observaciones,rut } = req.body;
 
         // Verificar que el paciente existe
-        const paciente = await Paciente.findByPk(id_paciente);
+        const paciente = await Usuario.findByPk(id_paciente);
         if (!paciente) {
             return res.status(404).json({ error: 'Paciente no encontrado' });
         }
@@ -40,10 +41,11 @@ const crearFicha = async (req, res) => {
             id_paciente,
             fecha,
             resumen,
-            observaciones
+            observaciones,
+            rut
         });
 
-        res.status(201).json(ficha);
+        res.status(201).json({ficha,id:ficha.id_ficha});
     } catch (error) {
         res.status(500).json({ error: 'Error al crear la ficha' });
     }

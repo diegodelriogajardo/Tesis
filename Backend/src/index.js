@@ -41,7 +41,7 @@ sequelize.authenticate()
 // Sincroniza las tablas y establece las relaciones
 (async () => {
     try {
-        await sequelize.sync({ force:true});  // Esto elimina y recrea las tablas
+        await sequelize.sync({ /*force:true*/});  // Esto elimina y recrea las tablas
         console.log('Tablas sincronizadas correctamente.');
 
         // Establece las relaciones

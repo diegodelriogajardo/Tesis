@@ -36,7 +36,7 @@ const obtenerAtenciones = async (req, res) => {
 // Controlador para crear una nueva atención asociada a un especialista, ficha y posiblemente diagnósticos
 const crearAtencion = async (req, res) => {
     try {
-        const { id_especialista, id_ficha, fecha_atencion, resumen, descripcion } = req.body;
+        const { id_especialista, id_ficha,id_cita, fecha_atencion, resumen, descripcion,tipo_atencion } = req.body;
 
         // Verificar que el especialista y la ficha existen
         const especialista = await Usuario.findByPk(id_especialista);
@@ -52,14 +52,17 @@ const crearAtencion = async (req, res) => {
         const atencion = await Atencion.create({
             id_especialista,
             id_ficha,
+            id_cita,
             fecha_atencion,
             resumen,
-            descripcion
+            descripcion,
+            tipo_atencion
         });
 
         res.status(201).json(atencion);
     } catch (error) {
-        res.status(500).json({ error: 'Error al crear la atención' });
+        console.error("Error al crear la atención:", error); // Agrega logs para depuración
+        res.status(500).json({ error: error.message || 'Error al crear la atención' });
     }
 };
 

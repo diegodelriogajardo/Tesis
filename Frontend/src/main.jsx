@@ -13,7 +13,7 @@ import Atenciones from './Components/Atenciones/atenciones.jsx';
 import Perfil from './Components/Perfil/perfil.jsx'
 import Citas from './Components/Citas/citas.jsx';
 import FinalizarAtencion from './Components/FinalizarAtencion/FinalizarAtencion.jsx';
-
+import Pacientes from './Components/Paciente/Pacientes.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -30,6 +30,7 @@ createRoot(document.getElementById('root')).render(
             <Route path="/perfil" element={<Perfil />} />
             <Route path="/citas" element={<Citas />} />
             <Route path="/finalizarAtencion" element={<FinalizarAtencion />} />
+            <Route path="/pacientes" element={<Pacientes />} />
           </Route>
         </Routes>
       </Router>

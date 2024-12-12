@@ -47,12 +47,15 @@ const Calendario = () => {
         }));
 
         setPatientAppointments(mappedAppointments);
+        //rellenar con citas nullas las horas y dias inaccesibles 
+        
       } catch (error) {
         console.error("Error al cargar datos:", error);
       }
     };
 
     fetchDoctorsAndAppointments();
+  
   }, []);
 
   const handleBookAppointment = async () => {
@@ -95,9 +98,29 @@ const Calendario = () => {
 
     setShowModal(false);
     setPatientName("");
-  };
+  }
+  const slotpropgetter = (date) => {
+    console.log(moment(date).hour())
+    const fechaActualAjustada=moment(date)
+    const isPastDate = fechaActualAjustada.isBefore(moment(), 'hour')
+    const isInaccess= fechaActualAjustada.hour()>16||fechaActualAjustada.hour()<8
+    if (isPastDate  || isInaccess) {
+      return {
+        className: 'past-day',
+        style: {
+          backgroundColor: 'rgba(180, 180, 180, 0.7)',
+          opacity: 0.5
+        }
+      }
+    }
+    return {}
+  }
 
   const handleSlotSelection = ({ start }) => {
+    const fechaSeleccionada=moment(start)
+    if(fechaSeleccionada<moment()) return
+    if(fechaSeleccionada.hour()>16 || fechaSeleccionada.hour()<8) return
+   
     if (!selectedDoctor) {
       Swal.fire({
         icon: "error",
@@ -185,6 +208,7 @@ const Calendario = () => {
               defaultView={Views.WEEK}
               step={60}
               timeslots={1}
+              slotPropGetter={slotpropgetter}
             />
           </div>
         </Col>

@@ -78,8 +78,8 @@ const actualizarUsuario = async (req, res) => {
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
 
-    if (usuarioActualizado.password) {
-      const passwordMatch = await comparePasswords(usuarioActualizado.password, usuarioExistente.password);
+    if (usuarioActualizado.newPassword) {
+      const passwordMatch = usuarioActualizado.password==usuarioExistente.password
       
       if (!passwordMatch) {
         return res.status(401).json({ error: "Contraseña incorrecta" });

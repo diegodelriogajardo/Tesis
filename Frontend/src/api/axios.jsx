@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:3000/api'
+    baseURL: 'http://prometeodigital.com:3003/api' // para local http:localhost:pouertoapi/api
 });
 
 export default api;

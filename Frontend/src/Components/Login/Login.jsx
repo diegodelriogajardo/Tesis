@@ -68,7 +68,7 @@ const Login = () => {
             
             <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} className="form-control formulario" placeholder="Clave" aria-label="Clave"></input>
             <button onClick={handleLogin} className='btn btn-secondary mt-4 boton'>Ingresar</button>
-            <p>¿No estas registrado?</p><a href={"/Registro"}>Registrate</a>
+            <p>¿No estas registrado?</p><a href={"/tesis/#/Registro"}>Registrate</a>
             {/* <button  onClick={prueba}>PRUEBAAAAAAAAAAAAA </button> */}
         </div>
     </div>

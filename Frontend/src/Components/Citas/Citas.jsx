@@ -181,7 +181,7 @@ const terminarCita=async(cita)=>{
   return (
     <Container fluid className="px-0">
       <Menu />
-      <h3 className="text-center mb-4">Citas de Hoy</h3>
+      <h3 className="text-center mb-4">Proximas Citas</h3>
       <Row className="px-4">
         <Col>
           <Table striped bordered hover responsive>

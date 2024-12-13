@@ -28,7 +28,7 @@ const Calendario = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
 
-        const specialists = response.data.filter((user) => user.especialidad);
+        const specialists = response.data.filter((user) => user.rol=='especialista' && user.id_usuario!=usuario.id_usuario);
         setDoctors(specialists);
         if (specialists.length > 0) {
           setSelectedDoctor(specialists[0]);
@@ -47,12 +47,15 @@ const Calendario = () => {
         }));
 
         setPatientAppointments(mappedAppointments);
+        //rellenar con citas nullas las horas y dias inaccesibles 
+        
       } catch (error) {
         console.error("Error al cargar datos:", error);
       }
     };
 
     fetchDoctorsAndAppointments();
+  
   }, []);
 
   const handleBookAppointment = async () => {
@@ -95,9 +98,29 @@ const Calendario = () => {
 
     setShowModal(false);
     setPatientName("");
-  };
+  }
+  const slotpropgetter = (date) => {
+    console.log(moment(date).hour())
+    const fechaActualAjustada=moment(date)
+    const isPastDate = fechaActualAjustada.isBefore(moment(), 'hour')
+    const isInaccess= fechaActualAjustada.hour()>16||fechaActualAjustada.hour()<8
+    if (isPastDate  || isInaccess) {
+      return {
+        className: 'past-day',
+        style: {
+          backgroundColor: 'rgba(180, 180, 180, 0.7)',
+          opacity: 0.5
+        }
+      }
+    }
+    return {}
+  }
 
   const handleSlotSelection = ({ start }) => {
+    const fechaSeleccionada=moment(start)
+    if(fechaSeleccionada<moment()) return
+    if(fechaSeleccionada.hour()>16 || fechaSeleccionada.hour()<8) return
+   
     if (!selectedDoctor) {
       Swal.fire({
         icon: "error",
@@ -138,6 +161,13 @@ const Calendario = () => {
     (appointment) =>
       appointment.id_especialista === (selectedDoctor?.id_usuario || null)
   );
+  const mostrarSelect = () => {
+    // Mostrar si el usuario no es especialista
+    if (usuario.rol !== 'especialista') return true;
+  
+    // Ocultar si hay solo un médico
+    return doctors.length > 1;
+  }
 
   return (
     <Container fluid className="calendario px-0">
@@ -146,7 +176,7 @@ const Calendario = () => {
       <div className="d-flex mb-4 justify-content-center">
         <Col md={6} sm={12}>
           <h3 className="text-center mb-4">Seleccione un Especialista</h3>
-          <Form>
+        { mostrarSelect() && <Form>
             <Form.Group>
               <FormSelect
                 value={selectedDoctor?.id_usuario || ""}
@@ -163,7 +193,7 @@ const Calendario = () => {
                 ))}
               </FormSelect>
             </Form.Group>
-          </Form>
+          </Form>}
         </Col>
       </div>
       <div className="d-flex">
@@ -185,6 +215,7 @@ const Calendario = () => {
               defaultView={Views.WEEK}
               step={60}
               timeslots={1}
+              slotPropGetter={slotpropgetter}
             />
           </div>
         </Col>

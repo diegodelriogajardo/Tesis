@@ -6,6 +6,7 @@ const config = {
         database: 'p1',
         host: 'localhost',
         dialect: 'mysql',
+        port: '3310',
     },
 };
 

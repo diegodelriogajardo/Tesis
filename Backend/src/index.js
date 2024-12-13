@@ -26,7 +26,7 @@ import Usuario from './models/usuario.js';
 
 import cors from'cors'
 const app = express();
-const PORT = 3000;
+const PORT = 3003;
 
 app.use(cors())
 // Conecta con la base de datos
@@ -41,7 +41,9 @@ sequelize.authenticate()
 // Sincroniza las tablas y establece las relaciones
 (async () => {
     try {
-        await sequelize.sync({ /*force:true*/});  // Esto elimina y recrea las tablas
+        await sequelize.sync({ 
+            // force:true
+        });  // Esto elimina y recrea las tablas
         console.log('Tablas sincronizadas correctamente.');
 
         // Establece las relaciones

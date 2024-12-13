@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './auth/auth.jsx';
 import Calendario from './Components/Calendario/calendario.jsx';
 import Login from './Components/Login/Login.jsx';
@@ -31,7 +31,9 @@ createRoot(document.getElementById('root')).render(
             <Route path="/citas" element={<Citas />} />
             <Route path="/finalizarAtencion" element={<FinalizarAtencion />} />
             <Route path="/pacientes" element={<Pacientes />} />
+
           </Route>
+          <Route path='*' element={<h1>404 sin ruta</h1>} ></Route>
         </Routes>
       </Router>
     </AuthProvider>

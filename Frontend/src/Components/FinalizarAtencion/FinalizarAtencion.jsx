@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import Swal from 'sweetalert2';  // Importa SweetAlert2
+import moment from 'moment';
 
 const FinalizarAtencion = () => {
     const location = useLocation();
@@ -21,7 +22,7 @@ const FinalizarAtencion = () => {
     });
 
     const [atencionData, setAtencionData] = useState({
-        fecha_atencion: '',
+        fecha_atencion: moment().format('YYYY-MM-DDTHH:mm'),
         tipo_atencion: '',
         resumen: '',
         descripcion: '',
@@ -29,7 +30,7 @@ const FinalizarAtencion = () => {
 
     const [diagnosticoData, setDiagnosticoData] = useState({
         descripcion: '',
-        fecha_diagnostico: '',
+        fecha_diagnostico: moment().format('YYYY-MM-DDTHH:mm'),
     });
 
     const [tratamientoData, setTratamientoData] = useState({
@@ -157,7 +158,7 @@ const FinalizarAtencion = () => {
                 <div className="card p-3 mb-4">
                     <h2>Crear Ficha</h2>
                     <form onSubmit={(e) => { e.preventDefault(); manejarCreacionFicha(); }}>
-                        <input type="datetime-local" className="form-control mb-2" placeholder="Fecha" onChange={(e) => setFichaData({ ...fichaData, fecha: e.target.value })} required />
+                        <input type="datetime-local" className="form-control mb-2"  placeholder="Fecha" onChange={(e) => setFichaData({ ...fichaData, fecha: e.target.value })} required />
                         <textarea className="form-control mb-2" placeholder="Resumen" onChange={(e) => setFichaData({ ...fichaData, resumen: e.target.value })} required />
                         <textarea className="form-control mb-2" placeholder="Observaciones" onChange={(e) => setFichaData({ ...fichaData, observaciones: e.target.value })} required />
                         <input type="text" className="form-control mb-2" placeholder="RUT" onChange={(e) => setFichaData({ ...fichaData, rut: e.target.value })} required />
@@ -169,7 +170,7 @@ const FinalizarAtencion = () => {
                 <div className="card p-3 mb-4">
                     <h2>Crear Atención</h2>
                     <form onSubmit={(e) => { e.preventDefault(); manejarCreacionAtencion(); }}>
-                        <input type="datetime-local" className="form-control mb-2" placeholder="Fecha Atención" onChange={(e) => setAtencionData({ ...atencionData, fecha_atencion: e.target.value })} required />
+                        <input type="datetime-local" className="form-control mb-2" placeholder="Fecha Atención"  value={atencionData.fecha_atencion} onChange={(e) => setAtencionData({ ...atencionData, fecha_atencion: e.target.value })} required />
                         <textarea className="form-control mb-2" placeholder="Tipo de Atención" onChange={(e) => setAtencionData({ ...atencionData, tipo_atencion: e.target.value })} required />
                         <textarea className="form-control mb-2" placeholder="Resumen" onChange={(e) => setAtencionData({ ...atencionData, resumen: e.target.value })} required />
                         <textarea className="form-control mb-2" placeholder="Descripción" onChange={(e) => setAtencionData({ ...atencionData, descripcion: e.target.value })} required />
@@ -182,7 +183,7 @@ const FinalizarAtencion = () => {
                     <h2>Crear Diagnóstico</h2>
                     <form onSubmit={(e) => { e.preventDefault(); manejarCreacionDiagnostico(); }}>
                         <textarea className="form-control mb-2" placeholder="Descripción" onChange={(e) => setDiagnosticoData({ ...diagnosticoData, descripcion: e.target.value })} required />
-                        <input type="datetime-local" className="form-control mb-2" placeholder="Fecha Diagnóstico" onChange={(e) => setDiagnosticoData({ ...diagnosticoData, fecha_diagnostico: e.target.value })} required />
+                        <input type="datetime-local" className="form-control mb-2" value={diagnosticoData.fecha_diagnostico} placeholder="Fecha Diagnóstico" onChange={(e) => setDiagnosticoData({ ...diagnosticoData, fecha_diagnostico: e.target.value })} required />
                         <button type="submit" className="btn btn-primary">Guardar Diagnóstico</button>
                     </form>
                 </div>

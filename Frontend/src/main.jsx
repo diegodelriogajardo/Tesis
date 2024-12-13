@@ -11,7 +11,7 @@ import Home from './Components/Home/home.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Atenciones from './Components/Atenciones/atenciones.jsx';
 import Perfil from './Components/Perfil/perfil.jsx'
-import Citas from './Components/Citas/citas.jsx';
+import Citas from './Components/Citas/Citas.jsx';
 import FinalizarAtencion from './Components/FinalizarAtencion/FinalizarAtencion.jsx';
 import Pacientes from './Components/Paciente/Pacientes.jsx';
 

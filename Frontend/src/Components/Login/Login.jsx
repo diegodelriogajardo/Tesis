@@ -62,7 +62,7 @@ const Login = () => {
     <>
     <div className="fondo">
         <div className="contenedor">
-            <h1 className="titulo display-5">Login</h1>{error && <p>{error}</p>}
+            <h1 className="titulo display-5">Iniciar Sesión</h1>{error && <p>{error}</p>}
             
             <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)} className="form-control formulario" placeholder="Email" aria-label="email"></input>
             

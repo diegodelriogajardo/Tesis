@@ -7,7 +7,7 @@ import moment from 'moment';
 const FinalizarAtencion = () => {
     const location = useLocation();
     const navigate = useNavigate(); // Usamos navigate para redirigir
-    const { id_paciente, id_especialista, id_cita } = location.state;
+    const { id_paciente, id_especialista, id_cita,Paciente } = location.state;
     const [mostrarFicha, setMostrarFicha] = useState(false);
     const [mostrarAtencion, setMostrarAtencion] = useState(false);
     const [mostrarDiagnostico, setMostrarDiagnostico] = useState(false);
@@ -15,10 +15,10 @@ const FinalizarAtencion = () => {
     const [ficha, setFicha] = useState();
 
     const [fichaData, setFichaData] = useState({
-        fecha: '',
+        fecha: moment().format('YYYY-MM-DDTHH:mm'),
         resumen: '',
         observaciones: '',
-        rut: '',
+        rut: Paciente.rut,
     });
 
     const [atencionData, setAtencionData] = useState({
@@ -74,7 +74,7 @@ const FinalizarAtencion = () => {
         try {
             const response = await api.post(
                 '/atencion',
-                { ...atencionData, id_ficha: ficha.id_ficha, id_especialista, id_cita },
+                { ...atencionData, id_ficha: ficha.id_ficha, id_especialista, id_cita,id_paciente },
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             );
             const nuevaAtencion = response.data;
@@ -137,7 +137,13 @@ const FinalizarAtencion = () => {
                 if (nuevoDiagnostico) {
                     setMostrarDiagnostico(true);
                 } else {
-                    Swal.fire('Proceso finalizado', '', 'success').then(() => {
+                    Swal.fire('Proceso finalizado', '', 'success').then(async () => {
+                        //cambiar estado de cita 
+                        try {
+                              await api.put(`/citas/terminar/${id_cita}`,{},{ headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+                        } catch (error) {
+                            
+                        }
                         navigate('/citas');  // Redirige a /citas cuando el proceso termine
                     });
                 }
@@ -158,10 +164,10 @@ const FinalizarAtencion = () => {
                 <div className="card p-3 mb-4">
                     <h2>Crear Ficha</h2>
                     <form onSubmit={(e) => { e.preventDefault(); manejarCreacionFicha(); }}>
-                        <input type="datetime-local" className="form-control mb-2"  placeholder="Fecha" onChange={(e) => setFichaData({ ...fichaData, fecha: e.target.value })} required />
+                        <input type="datetime-local" className="form-control mb-2"  placeholder="Fecha"  value={fichaData.fecha} onChange={(e) => setFichaData({ ...fichaData, fecha: e.target.value })} required />
                         <textarea className="form-control mb-2" placeholder="Resumen" onChange={(e) => setFichaData({ ...fichaData, resumen: e.target.value })} required />
                         <textarea className="form-control mb-2" placeholder="Observaciones" onChange={(e) => setFichaData({ ...fichaData, observaciones: e.target.value })} required />
-                        <input type="text" className="form-control mb-2" placeholder="RUT" onChange={(e) => setFichaData({ ...fichaData, rut: e.target.value })} required />
+                        <input type="text" className="form-control mb-2" placeholder="RUT" value={fichaData.rut} onChange={(e) => setFichaData({ ...fichaData, rut: e.target.value })} required />
                         <button type="submit" className="btn btn-primary">Guardar Ficha</button>
                     </form>
                 </div>

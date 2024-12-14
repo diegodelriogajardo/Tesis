@@ -33,21 +33,19 @@ const Calendario = () => {
         if (specialists.length > 0) {
           setSelectedDoctor(specialists[0]);
         }
-
+      if(usuario.rol !== 'especialista'){
         const appointmentsResponse = await api.get("/citas", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
-
-        const mappedAppointments = appointmentsResponse.data.map((cita) => ({
-          start: new Date(cita.fecha_cita),
-          end: moment(new Date(cita.fecha_cita)).add(1, "hour").toDate(),
-          title: cita.title,
-          id_especialista: cita.id_especialista,
-          id_paciente: cita.id_paciente,
-        }));
-
-        setPatientAppointments(mappedAppointments);
-        //rellenar con citas nullas las horas y dias inaccesibles 
+        llenarCalendario(appointmentsResponse.data)
+     
+      }else{
+       const appointmentsResponse2 = await api.get(`/citas/bySpec/${usuario.id_usuario}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        llenarCalendario(appointmentsResponse2.data)
+      }
+        
         
       } catch (error) {
         console.error("Error al cargar datos:", error);
@@ -58,6 +56,17 @@ const Calendario = () => {
   
   }, []);
 
+const llenarCalendario=(appoimets)=>{
+     const mappedAppointments = appoimets.map((cita) => ({
+          start: new Date(cita.fecha_cita),
+          end: moment(new Date(cita.fecha_cita)).add(1, "hour").toDate(),
+          title: cita.title,
+          id_especialista: cita.id_especialista,
+          id_paciente: cita.id_paciente,
+        }));
+
+        setPatientAppointments(mappedAppointments);
+}
   const handleBookAppointment = async () => {
     if (!patientName.trim()) {
       Swal.fire({
@@ -100,7 +109,6 @@ const Calendario = () => {
     setPatientName("");
   }
   const slotpropgetter = (date) => {
-    console.log(moment(date).hour())
     const fechaActualAjustada=moment(date)
     const isPastDate = fechaActualAjustada.isBefore(moment(), 'hour')
     const isInaccess= fechaActualAjustada.hour()>16||fechaActualAjustada.hour()<8
@@ -117,6 +125,7 @@ const Calendario = () => {
   }
 
   const handleSlotSelection = ({ start }) => {
+    if(usuario.rol === 'especialista')return
     const fechaSeleccionada=moment(start)
     if(fechaSeleccionada<moment()) return
     if(fechaSeleccionada.hour()>16 || fechaSeleccionada.hour()<8) return
@@ -150,17 +159,22 @@ const Calendario = () => {
   };
 
   const handleEventSelection = (event) => {
+    if(usuario.rol === 'especialista')return
+
     Swal.fire({
       icon: "info",
       title: "Cita reservada",
       text: `Esta cita ya está reservada: ${event.title}`,
     });
   };
-
-  const displayedEvents = patientAppointments.filter(
+  var displayedEvents=patientAppointments
+ if(usuario.rol !== 'especialista'){
+  displayedEvents = patientAppointments.filter(
     (appointment) =>
       appointment.id_especialista === (selectedDoctor?.id_usuario || null)
   );
+ }
+ 
   const mostrarSelect = () => {
     // Mostrar si el usuario no es especialista
     if (usuario.rol !== 'especialista') return true;
@@ -175,8 +189,8 @@ const Calendario = () => {
       <Menu />
       <div className="d-flex mb-4 justify-content-center">
         <Col md={6} sm={12}>
-          <h3 className="text-center mb-4">Seleccione un Especialista</h3>
-        { mostrarSelect() && <Form>
+          {mostrarSelect() && <><h3 className="text-center mb-4">Seleccione un Especialista</h3>
+         <Form>
             <Form.Group>
               <FormSelect
                 value={selectedDoctor?.id_usuario || ""}
@@ -193,7 +207,8 @@ const Calendario = () => {
                 ))}
               </FormSelect>
             </Form.Group>
-          </Form>}
+          </Form></>
+          }
         </Col>
       </div>
       <div className="d-flex">

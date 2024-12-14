@@ -173,7 +173,7 @@ const terminarCita=async(cita)=>{
     const fechaHora = new Date(cita.fecha_cita); // Convertir la fecha y hora a objeto Date
     const fecha = fechaHora.toISOString().split("T")[0];
     //console.log(cita)
-    navigate('/finalizarAtencion',{state:{id_cita:cita.id_cita,id_paciente:cita.id_paciente, id_especialista:cita.id_especialista,fecha,Paciente:cita.Paciente}})
+    navigate('/finalizarAtencion',{state:{id_cita:cita.id_cita,id_paciente:cita.id_paciente, id_especialista:cita.id_especialista,fecha,Paciente:cita.Paciente,estado:cita.estado}})
 }
 const verDetalle=async(cita)=>{
     const fechaHora = new Date(cita.fecha_cita); // Convertir la fecha y hora a objeto Date
@@ -241,13 +241,13 @@ const verDetalle=async(cita)=>{
                     >
                       Actualizar
                     </Button>{" "}
-                    {!cita?.estado?.startsWith('T')&&<Button
+                    <Button
                       variant="success"
                       size="sm"
                       onClick={() => terminarCita(cita)}
                     >
-                      Terminar
-                    </Button>}
+                      {cita?.estado?.startsWith('T')?'Agregar Diagnostico':'Generar atencion'}
+                    </Button>
                   </td>
                 </tr>
               ))}

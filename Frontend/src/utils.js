@@ -45,3 +45,17 @@ export const normaliceRut = (rut) => {
 	const rutLimpio = rut.replace(/[^0-9kK]/g, "").toUpperCase()
 	return rutLimpio
 }
+
+export function obtenerUltimoPorFecha(array, campo) {
+	if (!array || array.length === 0) {
+		return null // Si el array está vacío, retorna null
+	}
+
+	// Usamos sort para ordenar los objetos por fecha de manera descendente
+	const ordenadoPorFecha = array.sort(
+		(a, b) => new Date(b[campo]) - new Date(a[[campo]])
+	)
+
+	// Retornamos el primer elemento del array ordenado
+	return ordenadoPorFecha[0]
+}

@@ -3,11 +3,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import Swal from 'sweetalert2';  // Importa SweetAlert2
 import moment from 'moment';
+import { obtenerUltimoPorFecha } from '../../utils';
 
 const FinalizarAtencion = () => {
     const location = useLocation();
     const navigate = useNavigate(); // Usamos navigate para redirigir
-    const { id_paciente, id_especialista, id_cita,Paciente } = location.state;
+    const { id_paciente, id_especialista, id_cita,Paciente, estado } = location.state;
     const [mostrarFicha, setMostrarFicha] = useState(false);
     const [mostrarAtencion, setMostrarAtencion] = useState(false);
     const [mostrarDiagnostico, setMostrarDiagnostico] = useState(false);
@@ -49,6 +50,9 @@ const FinalizarAtencion = () => {
                 setFicha(fichaPaciente);
                 setMostrarAtencion(true);
             }
+             if(estado?.startsWith('T')){
+            obtenerUltimaAtencion()
+        }
         } catch (err) {
             Swal.fire('Error', 'Error al obtener las fichas', 'error');
         }
@@ -163,8 +167,26 @@ const FinalizarAtencion = () => {
         }
     };
 
+const obtenerUltimaAtencion=async ()=>{
+      try {
+            const response = await api.get(`/atencion/${id_paciente}`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+            const atencionesPorCita=response.data.filter((atencion)=>atencion.id_cita==id_cita)
+            const ultimaAtencion = obtenerUltimoPorFecha(atencionesPorCita,'fecha_atencion')
+            if (!ultimaAtencion) {
+                setMostrarAtencion(true);
+                setMostrarFicha(false);
+            } else {
+                setMostrarAtencion(false);
+                setAtencionData(ultimaAtencion);
+                setMostrarDiagnostico(true)
+            }
+        } catch (err) {
+            Swal.fire('Error', 'Error al obtener las fichas', 'error');
+        }
+}
     useEffect(() => {
         obtenerFichas();
+       
     }, []);
 
     return (

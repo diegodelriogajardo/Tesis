@@ -15,6 +15,8 @@ import Citas from './Components/Citas/Citas.jsx';
 import FinalizarAtencion from './Components/FinalizarAtencion/FinalizarAtencion.jsx';
 import Pacientes from './Components/Paciente/Pacientes.jsx';
 import DetalleCita from './Components/DetalleCita/DetalleCita.jsx';
+
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>

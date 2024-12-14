@@ -177,7 +177,7 @@ const llenarCalendario=(appoimets)=>{
  
   const mostrarSelect = () => {
     // Mostrar si el usuario no es especialista
-    if (usuario.rol !== 'especialista') return true;
+    if (usuario.rol === 'especialista') return false;
   
     // Ocultar si hay solo un médico
     return doctors.length > 1;

@@ -135,6 +135,16 @@ const FinalizarAtencion = () => {
                 });
 
                 if (nuevoDiagnostico) {
+                    // esconder tratamiento
+                    setMostrarTratamiento(false)
+                    //limpiar diagnostico anterior
+                    setDiagnosticoData(
+                        (prev)=>(
+                            {...prev,
+                        descripcion:''
+                    }
+                )
+            )
                     setMostrarDiagnostico(true);
                 } else {
                     Swal.fire('Proceso finalizado', '', 'success').then(async () => {
@@ -177,9 +187,9 @@ const FinalizarAtencion = () => {
                     <h2>Crear Atención</h2>
                     <form onSubmit={(e) => { e.preventDefault(); manejarCreacionAtencion(); }}>
                         <input type="datetime-local" className="form-control mb-2" placeholder="Fecha Atención"  value={atencionData.fecha_atencion} onChange={(e) => setAtencionData({ ...atencionData, fecha_atencion: e.target.value })} required />
-                        <textarea className="form-control mb-2" placeholder="Tipo de Atención" onChange={(e) => setAtencionData({ ...atencionData, tipo_atencion: e.target.value })} required />
-                        <textarea className="form-control mb-2" placeholder="Resumen" onChange={(e) => setAtencionData({ ...atencionData, resumen: e.target.value })} required />
-                        <textarea className="form-control mb-2" placeholder="Descripción" onChange={(e) => setAtencionData({ ...atencionData, descripcion: e.target.value })} required />
+                        <textarea className="form-control mb-2" placeholder="Tipo de Atención"value={atencionData.tipo_atencion} onChange={(e) => setAtencionData({ ...atencionData, tipo_atencion: e.target.value })} required />
+                        <textarea className="form-control mb-2" placeholder="Resumen"value={atencionData.resumen} onChange={(e) => setAtencionData({ ...atencionData, resumen: e.target.value })} required />
+                        <textarea className="form-control mb-2" placeholder="Descripción"value={atencionData.descripcion} onChange={(e) => setAtencionData({ ...atencionData, descripcion: e.target.value })} required />
                         <button type="submit" className="btn btn-primary">Guardar Atención</button>
                     </form>
                 </div>
@@ -188,7 +198,7 @@ const FinalizarAtencion = () => {
                 <div className="card p-3 mb-4">
                     <h2>Crear Diagnóstico</h2>
                     <form onSubmit={(e) => { e.preventDefault(); manejarCreacionDiagnostico(); }}>
-                        <textarea className="form-control mb-2" placeholder="Descripción" onChange={(e) => setDiagnosticoData({ ...diagnosticoData, descripcion: e.target.value })} required />
+                        <textarea className="form-control mb-2" placeholder="Descripción" value={diagnosticoData.descripcion} onChange={(e) => setDiagnosticoData({ ...diagnosticoData, descripcion: e.target.value })} required />
                         <input type="datetime-local" className="form-control mb-2" value={diagnosticoData.fecha_diagnostico} placeholder="Fecha Diagnóstico" onChange={(e) => setDiagnosticoData({ ...diagnosticoData, fecha_diagnostico: e.target.value })} required />
                         <button type="submit" className="btn btn-primary">Guardar Diagnóstico</button>
                     </form>
@@ -198,9 +208,9 @@ const FinalizarAtencion = () => {
                 <div className="card p-3 mb-4">
                     <h2>Crear Tratamiento</h2>
                     <form onSubmit={(e) => { e.preventDefault(); manejarCreacionTratamiento(); }}>
-                        <textarea className="form-control mb-2" placeholder="Descripción del Tratamiento" onChange={(e) => setTratamientoData({ ...tratamientoData, descripcion: e.target.value })} required />
-                        <input type="date" className="form-control mb-2" placeholder="Fecha de Inicio" onChange={(e) => setTratamientoData({ ...tratamientoData, fecha_inicio: e.target.value })} required />
-                        <input type="date" className="form-control mb-2" placeholder="Fecha de Fin" onChange={(e) => setTratamientoData({ ...tratamientoData, fecha_fin: e.target.value })} required />
+                        <textarea className="form-control mb-2" placeholder="Descripción del Tratamiento" value={tratamientoData.descripcion} onChange={(e) => setTratamientoData({ ...tratamientoData, descripcion: e.target.value })} required />
+                        <input type="date" className="form-control mb-2" placeholder="Fecha de Inicio" value={tratamientoData.fecha_inicio} onChange={(e) => setTratamientoData({ ...tratamientoData, fecha_inicio: e.target.value })} required />
+                        <input type="date" className="form-control mb-2" placeholder="Fecha de Fin" value={tratamientoData.fecha_fin} onChange={(e) => setTratamientoData({ ...tratamientoData, fecha_fin: e.target.value })} required />
                         <button type="submit" className="btn btn-primary">Guardar Tratamiento</button>
                     </form>
                 </div>

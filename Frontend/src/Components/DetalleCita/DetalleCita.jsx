@@ -7,8 +7,11 @@ import { Menu } from "../Navbar/Menu";
 import { Container } from "react-bootstrap";
 import { Page, Text, View, Document, StyleSheet,PDFDownloadLink } from '@react-pdf/renderer';
 import localization from 'moment/locale/es';
-moment.locale('es', localization)
-moment.updateLocale('es',localization)
+moment.locale('es')
+moment.updateLocale('es', {
+    months: 'enero_febrero_marzo_abril_mayo_junio_julio_agosto_septiembre_octubre_noviembre_diciembre'.split('_'),
+    weekdays: 'domingo_lunes_martes_miércoles_jueves_viernes_sábado'.split('_'),
+});
 console.log(moment().toLocaleString())
 const DetalleCita = () => {
  
@@ -91,7 +94,21 @@ const DetalleCita = () => {
            <Container fluid className="px-0">
       <Menu />
         <div style={containerStyle}>
-            <h2>Detalles de la Cita</h2>
+            <h2>Detalles de la Cita <PDFDownloadLink
+    document={<MyDocument cita={cita} />}
+    fileName={`detalle_cita_${cita.id_cita}.pdf`}
+    style={{
+      textDecoration: 'none',
+      padding: '10px',
+      color: '#fff',
+      backgroundColor: '#00796b',
+      borderRadius: '5px',
+      marginTop: '20px',
+      display: 'inline-block',
+    }}
+  >
+    {({ loading }) => (loading ? 'Generando PDF...' : 'Descargar PDF')}
+  </PDFDownloadLink></h2>
             <div className="card" style={cardStyle}>
                 <div style={rowStyle}>
                     <div style={columnStyle}>
@@ -172,21 +189,7 @@ const DetalleCita = () => {
             </div>
         </div>
         <div>
-  <PDFDownloadLink
-    document={<MyDocument cita={cita} />}
-    fileName={`detalle_cita_${cita.id_cita}.pdf`}
-    style={{
-      textDecoration: 'none',
-      padding: '10px',
-      color: '#fff',
-      backgroundColor: '#00796b',
-      borderRadius: '5px',
-      marginTop: '20px',
-      display: 'inline-block',
-    }}
-  >
-    {({ loading }) => (loading ? 'Generando PDF...' : 'Descargar PDF')}
-  </PDFDownloadLink>
+
 </div>
           </Container>
     );

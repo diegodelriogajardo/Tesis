@@ -4,7 +4,7 @@ import Ficha from "../models/ficha.js"
 import Diagnostico from "../models/diagnostico.js"
 import Usuario from "../models/usuario.js"
 import Tratamiento from "../models/tratamiento.js"
-
+import { Op } from "sequelize"
 // Controlador para obtener todas las atenciones con información de los especialistas, fichas y diagnósticos asociados
 const obtenerAtenciones = async (req, res) => {
 	try {
@@ -114,17 +114,34 @@ const obtenerAtencionesPorPaciente = async (req, res) => {
 		const atenciones = await Atencion.findAll({
 			where: {
 				id_paciente: pacienteId // Filtrar por el id del paciente
-			},
-			include: [
-				{
-					model: Usuario,
-					attributes: ["nombre", "especialidad"]
-				},
-				{
-					model: Ficha,
-					attributes: ["fecha"]
+			}
+		})
+		var listaEspecialistas = atenciones.map((x) => x.id_especialista)
+
+		const especialistas = await Usuario.findAll({
+			where: {
+				id_usuario: { [Op.in]: listaEspecialistas }
+			}
+		})
+
+		const atencionesConEspecialistas = atenciones.map((x) => {
+			const infoEspecialista = especialistas.find(
+				(y) => y.id_usuario == x.id_especialista
+			)
+			const nuevaAtencion = {
+				descripcion: x.descripcion,
+				resumen: x.resumen,
+				fecha_atencion: x.fecha_atencion,
+				id_atencion: x.id_atencion,
+				id_cita: x.id_cita,
+				tipo_atencion: x.tipo_atencion,
+				especialista: {
+					nombre: infoEspecialista?.nombre,
+					email: infoEspecialista?.email,
+					rut: infoEspecialista?.rut
 				}
-			]
+			}
+			return nuevaAtencion
 		})
 		console.log("Atenciones encontradas:", atenciones) // Verificar las atenciones encontradas
 
@@ -136,7 +153,7 @@ const obtenerAtencionesPorPaciente = async (req, res) => {
 
 		console.log("Atenciones encontradas:", atenciones) // Verificar las atenciones encontradas
 
-		res.json(atenciones) // Responder con la lista de atenciones
+		res.json(atencionesConEspecialistas) // Responder con la lista de atenciones
 	} catch (error) {
 		console.error("Error al obtener las atenciones:", error) // Verificar el error en consola
 		res.status(500).json({

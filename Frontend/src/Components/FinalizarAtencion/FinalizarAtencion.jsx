@@ -65,7 +65,7 @@ const FinalizarAtencion = () => {
                 { ...fichaData, id_paciente },
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             );
-            const nuevaFicha = response.data.ficha.id_ficha;
+            const nuevaFicha = response.data.ficha;
             setFicha(nuevaFicha);
             setMostrarFicha(false);
             setMostrarAtencion(true);

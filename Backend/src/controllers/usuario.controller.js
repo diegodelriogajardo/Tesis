@@ -44,7 +44,8 @@ const crearUsuario = async (req, res) => {
 		} = req.body
 
 		const hashedPassword = await hashPassword(password)
-
+		const activo = rol?.startsWith("E") ? false : true
+		console.log(rol, activo)
 		const usuario = await Usuario.create({
 			nombre,
 			especialidad,
@@ -56,7 +57,8 @@ const crearUsuario = async (req, res) => {
 			rut,
 			fechaNacimiento,
 			gradoDependencia,
-			visible
+			visible,
+			activo
 		})
 
 		res.status(201).json(usuario)
@@ -168,7 +170,7 @@ const login = async (req, res) => {
 
 	try {
 		const usuario = await Usuario.findOne({
-			where: { email }
+			where: { email, activo: true }
 		})
 
 		if (!usuario) {

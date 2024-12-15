@@ -219,14 +219,15 @@ const verDetalle=async(cita)=>{
                   <td>{cita.title}</td>
                   <td>{cita.Paciente?.nombre}</td>
                   <td>
-                    {cita?.estado?.startsWith('T') &&<Button
+                    <Button
                       variant="success"
                       size="sm"
                       style={{marginRight:'5px'}}
                       onClick={() => verDetalle(cita)}
+                      disabled={!cita?.estado?.startsWith('T')}
                     >
                      ver detalle
-                    </Button>}
+                    </Button>
                     <Button
                       variant="danger"
                       size="sm"

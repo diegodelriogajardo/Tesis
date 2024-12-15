@@ -118,7 +118,7 @@ const Atenciones = () => {
   {atenciones.map((atencion) => (
     <tr key={atencion.id_atencion}>
       <td>{new Date(atencion.fecha_atencion).toLocaleString()}</td>
-      <td>{atencion.especialista ? atencion.especialista.nombre : "No asignado"}</td>
+      <td>{atencion.especialista ? atencion.especialista.nombre +' ('+atencion.especialista.rut+')' : "No asignado"}</td>
       <td>{atencion.tipo_atencion}</td>
       <td>{atencion.resumen}</td>
       <td>

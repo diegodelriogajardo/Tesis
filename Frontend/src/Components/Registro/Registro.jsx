@@ -175,6 +175,12 @@ return(
             <div className='check'>
             <input className='checkbox'  type="checkbox" value={esEspecialista}  onClick={handlerChecked}  ></input><p>Especialista</p>
             </div>
+{esEspecialista && (
+  <p>
+    <b>Nota:</b> Su cuenta será activada una vez que los datos proporcionados hayan sido verificados y aprobados. Por favor, asegúrese de ingresar información veraz y precisa, ya que esto es fundamental para garantizar la autenticidad y confianza en el proceso.
+  </p>
+)}
+
             <button className='btn btn-secondary mt-4 boton' type='submit'>Guardar</button>
         </form>
     </div>

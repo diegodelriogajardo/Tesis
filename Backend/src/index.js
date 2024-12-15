@@ -43,7 +43,7 @@ sequelize
 ;(async () => {
 	try {
 		await sequelize.sync({
-			//force: true
+			// force: true
 		}) // Esto elimina y recrea las tablas
 		console.log("Tablas sincronizadas correctamente.")
 

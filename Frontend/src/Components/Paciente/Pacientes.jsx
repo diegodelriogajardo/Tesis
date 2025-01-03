@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Table, Modal, Button, Form } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Table,
+  Modal,
+  Button,
+  Form,
+} from "react-bootstrap";
 import Swal from "sweetalert2"; // Asegúrate de tener instalado SweetAlert2
 import api from "../../api/axios";
 import "./pacientes.css";
@@ -33,10 +41,20 @@ const Pacientes = () => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-  
+
         // Filtrar los usuarios con el rol "paciente"
-        const pacientes = response.data.filter((usuario) => usuario.rol === "paciente");
-  
+        let pacientes = response.data.filter(
+          (usuario) => usuario.rol === "paciente"
+        );
+        console.log(pacientes);
+        // // filtrar solo los del especialista
+        // if (esEspecialista) {
+        //   const especialista = JSON.parse(localStorage.getItem("usuario"));
+        //   console.log(especialista);
+        //   pacientes = pacientes.filter(
+        //     (paciente) => paciente.id_especialista === especialista.id_usuario
+        //   );
+        // }
         setPacientes(pacientes); // Actualizar el estado solo con pacientes
       } catch (err) {
         console.error("Error al obtener los pacientes:", err);
@@ -49,7 +67,7 @@ const Pacientes = () => {
         setLoading(false);
       }
     };
-  
+
     fetchPacientes();
   }, []);
 
@@ -62,7 +80,9 @@ const Pacientes = () => {
     setDetallePaciente(paciente);
     setShowModal(true);
   };
-
+  const handleHistorialAtenciones = (paciente) => {
+    navigate("/HistorialAtenciones", { state: { paciente } });
+  };
   // Función para cerrar el modal
   const handleCloseModal = () => {
     setShowModal(false);
@@ -103,7 +123,7 @@ const Pacientes = () => {
       });
       return;
     }
-  
+
     try {
       await api.put(`/usuario/${idPaciente}`, pacienteActualizado, {
         headers: {
@@ -183,6 +203,12 @@ const Pacientes = () => {
                   <td>{paciente.direccion}</td>
                   <td>
                     <button
+                      className="btn btn-success me-2"
+                      onClick={() => handleHistorialAtenciones(paciente)}
+                    >
+                      historial de atenciones
+                    </button>
+                    <button
                       className="btn btn-info me-2"
                       onClick={() => handleVerDetalles(paciente)}
                     >
@@ -198,7 +224,9 @@ const Pacientes = () => {
                         </button>
                         <button
                           className="btn btn-danger"
-                          onClick={() => handleEliminarPaciente(paciente.id_usuario)}
+                          onClick={() =>
+                            handleEliminarPaciente(paciente.id_usuario)
+                          }
                         >
                           Eliminar
                         </button>
@@ -220,11 +248,22 @@ const Pacientes = () => {
         <Modal.Body>
           {detallePaciente ? (
             <>
-              <p><strong>Nombre:</strong> {detallePaciente.nombre}</p>
-              <p><strong>Email:</strong> {detallePaciente.email}</p>
-              <p><strong>Teléfono:</strong> {detallePaciente.telefono}</p>
-              <p><strong>Dirección:</strong> {detallePaciente.direccion}</p>
-              <p><strong>Grado de Dependencia:</strong> {detallePaciente.gradoDependencia}</p>
+              <p>
+                <strong>Nombre:</strong> {detallePaciente.nombre}
+              </p>
+              <p>
+                <strong>Email:</strong> {detallePaciente.email}
+              </p>
+              <p>
+                <strong>Teléfono:</strong> {detallePaciente.telefono}
+              </p>
+              <p>
+                <strong>Dirección:</strong> {detallePaciente.direccion}
+              </p>
+              <p>
+                <strong>Grado de Dependencia:</strong>{" "}
+                {detallePaciente.gradoDependencia}
+              </p>
             </>
           ) : (
             <p>Cargando detalles...</p>
@@ -249,7 +288,12 @@ const Pacientes = () => {
               <Form.Control
                 type="text"
                 value={pacienteActualizado.nombre}
-                onChange={(e) => setPacienteActualizado({ ...pacienteActualizado, nombre: e.target.value })}
+                onChange={(e) =>
+                  setPacienteActualizado({
+                    ...pacienteActualizado,
+                    nombre: e.target.value,
+                  })
+                }
               />
             </Form.Group>
             <Form.Group controlId="telefono">
@@ -257,7 +301,12 @@ const Pacientes = () => {
               <Form.Control
                 type="text"
                 value={pacienteActualizado.telefono}
-                onChange={(e) => setPacienteActualizado({ ...pacienteActualizado, telefono: e.target.value })}
+                onChange={(e) =>
+                  setPacienteActualizado({
+                    ...pacienteActualizado,
+                    telefono: e.target.value,
+                  })
+                }
               />
             </Form.Group>
             <Form.Group controlId="direccion">
@@ -265,7 +314,12 @@ const Pacientes = () => {
               <Form.Control
                 type="text"
                 value={pacienteActualizado.direccion}
-                onChange={(e) => setPacienteActualizado({ ...pacienteActualizado, direccion: e.target.value })}
+                onChange={(e) =>
+                  setPacienteActualizado({
+                    ...pacienteActualizado,
+                    direccion: e.target.value,
+                  })
+                }
               />
             </Form.Group>
             <Form.Group controlId="email">
@@ -273,7 +327,12 @@ const Pacientes = () => {
               <Form.Control
                 type="email"
                 value={pacienteActualizado.email}
-                onChange={(e) => setPacienteActualizado({ ...pacienteActualizado, email: e.target.value })}
+                onChange={(e) =>
+                  setPacienteActualizado({
+                    ...pacienteActualizado,
+                    email: e.target.value,
+                  })
+                }
               />
             </Form.Group>
           </Form>

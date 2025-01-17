@@ -13,15 +13,19 @@ import api from "../../api/axios";
 import "./pacientes.css";
 import { Menu } from "../Navbar/Menu";
 import { useNavigate } from "react-router-dom";
+import useDebounce from "../../utils/useDebounce";
 
 const Pacientes = () => {
   const navigate = useNavigate();
   const [idPaciente, setIdPaciente] = useState(null);
   const [pacientes, setPacientes] = useState([]);
+  const [pacientesmostrar, setPacientesMostrar] = useState([]);
   const [loading, setLoading] = useState(true);
   const [detallePaciente, setDetallePaciente] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [filtroPaciente, setFiltroPacientes] = useState("");
+
   const [pacienteActualizado, setPacienteActualizado] = useState({
     nombre: "",
     telefono: "",
@@ -30,6 +34,33 @@ const Pacientes = () => {
   });
   const usuario = localStorage.getItem("usuario");
   const esEspecialista = usuario && JSON.parse(usuario)?.rol === "especialista";
+
+  //filtrar lista pacientes
+  useEffect(() => {
+    if (filtroPaciente) {
+      if (pacientes.length > 0) {
+        const filtrarPacientes = pacientes.filter(
+          (paciente) =>
+            paciente.nombre
+              .toLowerCase()
+              .includes(filtroPaciente.toLowerCase()) ||
+            paciente.email
+              .toLowerCase()
+              .includes(filtroPaciente.toLowerCase()) ||
+            paciente.telefono
+              .toLowerCase()
+              .includes(filtroPaciente.toLowerCase()) ||
+            paciente.direccion
+              .toLowerCase()
+              .includes(filtroPaciente.toLowerCase()) ||
+            paciente.rut.toLowerCase().includes(filtroPaciente.toLowerCase())
+        );
+        setPacientesMostrar(filtrarPacientes);
+      }
+    } else {
+      setPacientesMostrar(pacientes);
+    }
+  }, [filtroPaciente]);
 
   // Obtener la lista de pacientes desde el backend
   useEffect(() => {
@@ -46,16 +77,9 @@ const Pacientes = () => {
         let pacientes = response.data.filter(
           (usuario) => usuario.rol === "paciente"
         );
-        console.log(pacientes);
-        // // filtrar solo los del especialista
-        // if (esEspecialista) {
-        //   const especialista = JSON.parse(localStorage.getItem("usuario"));
-        //   console.log(especialista);
-        //   pacientes = pacientes.filter(
-        //     (paciente) => paciente.id_especialista === especialista.id_usuario
-        //   );
-        // }
+
         setPacientes(pacientes); // Actualizar el estado solo con pacientes
+        setPacientesMostrar(pacientes);
       } catch (err) {
         console.error("Error al obtener los pacientes:", err);
         Swal.fire({
@@ -182,62 +206,72 @@ const Pacientes = () => {
 
       {/* Main Content */}
       <h3 className="text-center mb-4">Pacientes</h3>
-      <Row className="px-4">
-        <Col>
-          <Table striped bordered hover responsive>
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Teléfono</th>
-                <th>Dirección</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pacientes.map((paciente) => (
-                <tr key={paciente.id_usuario}>
-                  <td>{paciente.nombre}</td>
-                  <td>{paciente.email}</td>
-                  <td>{paciente.telefono}</td>
-                  <td>{paciente.direccion}</td>
-                  <td>
-                    <button
-                      className="btn btn-success me-2"
-                      onClick={() => handleHistorialAtenciones(paciente)}
-                    >
-                      historial de atenciones
-                    </button>
-                    <button
-                      className="btn btn-info me-2"
-                      onClick={() => handleVerDetalles(paciente)}
-                    >
-                      Ver detalles
-                    </button>
-                    {esEspecialista && (
-                      <>
-                        <button
-                          className="btn btn-warning me-2"
-                          onClick={() => handleOpenUpdateModal(paciente)}
-                        >
-                          Actualizar
-                        </button>
-                        <button
-                          className="btn btn-danger"
-                          onClick={() =>
-                            handleEliminarPaciente(paciente.id_usuario)
-                          }
-                        >
-                          Eliminar
-                        </button>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+      <Row className="px-4 py-2">
+        <Col className="d-flex justify-content-end mb-3">
+          <Form.Group>
+            <Form.Control
+              type="text"
+              placeholder="Buscar"
+              value={filtroPaciente}
+              onChange={({ target: { value } }) => setFiltroPacientes(value)}
+            />
+          </Form.Group>
         </Col>
+        <Table striped bordered hover responsive>
+          <thead>
+            <tr>
+              <th>Rut</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Dirección</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {pacientesmostrar.map((paciente) => (
+              <tr key={paciente.id_usuario}>
+                <td>{paciente.rut}</td>
+                <td>{paciente.nombre}</td>
+                <td>{paciente.email}</td>
+                <td>{paciente.telefono}</td>
+                <td>{paciente.direccion}</td>
+                <td>
+                  <button
+                    className="btn btn-success me-2"
+                    onClick={() => handleHistorialAtenciones(paciente)}
+                  >
+                    historial de atenciones
+                  </button>
+                  <button
+                    className="btn btn-info me-2"
+                    onClick={() => handleVerDetalles(paciente)}
+                  >
+                    Ver detalles
+                  </button>
+                  {esEspecialista && (
+                    <>
+                      <button
+                        className="btn btn-warning me-2"
+                        onClick={() => handleOpenUpdateModal(paciente)}
+                      >
+                        Actualizar
+                      </button>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() =>
+                          handleEliminarPaciente(paciente.id_usuario)
+                        }
+                      >
+                        Eliminar
+                      </button>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       </Row>
 
       {/* Modal con detalles del paciente */}

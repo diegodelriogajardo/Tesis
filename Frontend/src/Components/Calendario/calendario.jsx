@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import moment from "moment";
+import "moment/locale/es";
 import Swal from "sweetalert2";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import api from "../../api/axios";
@@ -14,9 +15,22 @@ import {
 } from "react-bootstrap";
 import "./calendario.css";
 import { Menu } from "../Navbar/Menu";
-
+moment.locale("es");
 const localizer = momentLocalizer(moment);
-
+const messages = {
+  allDay: "Todo el día",
+  previous: "Anterior",
+  next: "Siguiente",
+  today: "Hoy",
+  month: "Mes",
+  week: "Semana",
+  day: "Día",
+  agenda: "Agenda",
+  date: "Fecha",
+  time: "Hora",
+  event: "Evento",
+  showMore: (total) => `+ Ver más (${total})`,
+};
 const Calendario = () => {
   const [doctors, setDoctors] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
@@ -27,7 +41,6 @@ const Calendario = () => {
 
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   const newUser = usuario || {};
-
   useEffect(() => {
     const fetchDoctorsAndAppointments = async () => {
       try {
@@ -231,7 +244,7 @@ const Calendario = () => {
                   >
                     {doctors.map((doctor) => (
                       <option key={doctor.id_usuario} value={doctor.id_usuario}>
-                        {doctor.nombre}
+                        {`${doctor.nombre} - ${doctor.especialidad}`}
                       </option>
                     ))}
                   </FormSelect>
@@ -247,6 +260,7 @@ const Calendario = () => {
           <div style={{ height: "80vh", padding: "12px" }}>
             <Calendar
               localizer={localizer}
+              messages={messages}
               events={displayedEvents}
               startAccessor="start"
               endAccessor="end"
@@ -261,7 +275,36 @@ const Calendario = () => {
               step={60}
               timeslots={1}
               slotPropGetter={slotpropgetter}
+              eventPropGetter={(event) => {
+                if (event?.title?.includes("Cita:")) {
+                  return { style: { backgroundColor: "blue" } };
+                }
+                if (event?.title?.includes("Derivacion:")) {
+                  return { style: { backgroundColor: "green" } };
+                }
+                return {};
+              }}
+              formats={{
+                dateFormat: "DD",
+                dayFormat: (date, culture, localizer) =>
+                  localizer.format(date, "dddd", culture), // Muestra el día en español
+                weekdayFormat: (date, culture, localizer) =>
+                  localizer.format(date, "ddd", culture), // Muestra "Lun", "Mar", etc.
+                timeGutterFormat: "HH:mm", // Formato de horas en 24h
+                monthHeaderFormat: "MMMM YYYY",
+                dayHeaderFormat: "dddd, D MMMM YYYY",
+                agendaDateFormat: "dddd D MMM",
+                agendaTimeFormat: "HH:mm",
+                agendaTimeRangeFormat: ({ start, end }, culture, localizer) =>
+                  `${localizer.format(
+                    start,
+                    "HH:mm",
+                    culture
+                  )} - ${localizer.format(end, "HH:mm", culture)}`,
+              }}
             />
+            {/* add symbolgy green and blue for Derivacion and Cita */}
+            <SimbologiaCard />
           </div>
         </Col>
       </div>
@@ -294,6 +337,43 @@ const Calendario = () => {
         </Modal.Footer>
       </Modal>
     </Container>
+  );
+};
+
+const SimbologiaCard = () => {
+  const cardStyle = {
+    display: "flex",
+    gap: "10px",
+    borderRadius: "10px",
+    width: "250px",
+    padding: "15px",
+    fontFamily: "Arial, sans-serif",
+  };
+
+  const itemContainerStyle = {
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "10px",
+  };
+
+  const boxStyle = (color) => ({
+    width: "30px",
+    height: "20px",
+    backgroundColor: color,
+    marginRight: "10px",
+  });
+
+  return (
+    <div style={cardStyle}>
+      <div style={itemContainerStyle}>
+        <div style={boxStyle("blue")}></div>
+        <span>Cita</span>
+      </div>
+      <div style={itemContainerStyle}>
+        <div style={boxStyle("green")}></div>
+        <span>Derivación</span>
+      </div>
+    </div>
   );
 };
 

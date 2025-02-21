@@ -4,3 +4,18 @@
 .rbc-time-header[style*="margin-right"] {
     margin-right: 0 !important;
   }
+.legend{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+.legend div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 10px;
+}
+.legend div span{
+    margin-left: 5px;
+}

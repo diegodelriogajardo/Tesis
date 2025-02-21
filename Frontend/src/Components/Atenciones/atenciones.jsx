@@ -59,7 +59,7 @@ const Atenciones = () => {
           confirmButtonText: "Aceptar",
         }).then(() => {
           navigate("/calendario");
-        })
+        });
       } finally {
         setLoading(false);
       }
@@ -115,23 +115,30 @@ const Atenciones = () => {
               </tr>
             </thead>
             <tbody>
-  {atenciones.map((atencion) => (
-    <tr key={atencion.id_atencion}>
-      <td>{new Date(atencion.fecha_atencion).toLocaleString()}</td>
-      <td>{atencion.especialista ? atencion.especialista.nombre +' ('+atencion.especialista.rut+')' : "No asignado"}</td>
-      <td>{atencion.tipo_atencion}</td>
-      <td>{atencion.resumen}</td>
-      <td>
-        <button
-          className="btn btn-info"
-          onClick={() => handleVerDetalles(atencion)}
-        >
-          Ver detalles
-        </button>
-      </td>
-    </tr>
-  ))}
-</tbody>
+              {atenciones.map((atencion) => (
+                <tr key={atencion.id_atencion}>
+                  <td>{new Date(atencion.fecha_atencion).toLocaleString()}</td>
+                  <td>
+                    {atencion.especialista
+                      ? atencion.especialista.nombre +
+                        " (" +
+                        atencion.especialista.especialidad +
+                        ")"
+                      : "No asignado"}
+                  </td>
+                  <td>{atencion.tipo_atencion}</td>
+                  <td>{atencion.resumen}</td>
+                  <td>
+                    <button
+                      className="btn btn-info"
+                      onClick={() => handleVerDetalles(atencion)}
+                    >
+                      Ver detalles
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </Table>
         </Col>
       </Row>
@@ -147,14 +154,31 @@ const Atenciones = () => {
               <h5>Diagnósticos:</h5>
               {detalleAtencion.diagnosticos.map((diagnostico, index) => (
                 <div key={index}>
-                  <p><strong>Descripción:</strong> {diagnostico.descripcion}</p>
-                  <p><strong>Fecha:</strong> {new Date(diagnostico.fecha_diagnostico).toLocaleDateString()}</p>
+                  <p>
+                    <strong>Descripción:</strong> {diagnostico.descripcion}
+                  </p>
+                  <p>
+                    <strong>Fecha:</strong>{" "}
+                    {new Date(
+                      diagnostico.fecha_diagnostico
+                    ).toLocaleDateString()}
+                  </p>
                   <h6>Tratamientos:</h6>
                   {diagnostico.tratamientos.map((tratamiento, tIndex) => (
                     <div key={tIndex} style={{ marginLeft: "20px" }}>
-                      <p><strong>Descripción:</strong> {tratamiento.descripcion}</p>
-                      <p><strong>Fecha de inicio:</strong> {new Date(tratamiento.fecha_inicio).toLocaleDateString()}</p>
-                      <p><strong>Fecha de fin:</strong> {new Date(tratamiento.fecha_fin).toLocaleDateString()}</p>
+                      <p>
+                        <strong>Descripción:</strong> {tratamiento.descripcion}
+                      </p>
+                      <p>
+                        <strong>Fecha de inicio:</strong>{" "}
+                        {new Date(
+                          tratamiento.fecha_inicio
+                        ).toLocaleDateString()}
+                      </p>
+                      <p>
+                        <strong>Fecha de fin:</strong>{" "}
+                        {new Date(tratamiento.fecha_fin).toLocaleDateString()}
+                      </p>
                     </div>
                   ))}
                 </div>

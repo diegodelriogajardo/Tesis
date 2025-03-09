@@ -141,8 +141,19 @@ const Calendario = () => {
   const slotpropgetter = (date) => {
     const fechaActualAjustada = moment(date);
     const isPastDate = fechaActualAjustada.isBefore(moment(), "hour");
-    const isInaccess =
-      fechaActualAjustada.hour() > 16 || fechaActualAjustada.hour() < 8;
+    let isInaccess =
+      fechaActualAjustada.hour() > 16 ||
+      fechaActualAjustada.hour() < 8 ||
+      fechaActualAjustada.day() === 0;
+
+    if (fechaActualAjustada.day() === 6) {
+      // si es sabado
+      isInaccess =
+        fechaActualAjustada.hour() < 8 ||
+        fechaActualAjustada.hour() > 14 ||
+        isInaccess;
+    }
+
     if (isPastDate || isInaccess) {
       return {
         className: "past-day",
@@ -160,6 +171,10 @@ const Calendario = () => {
     if (fechaSeleccionada < moment()) return;
     if (fechaSeleccionada.hour() > 16 || fechaSeleccionada.hour() < 8) return;
 
+    if (fechaSeleccionada.day() === 6) {
+      if (fechaSeleccionada.hour() > 14) return;
+    }
+    if (fechaSeleccionada.day() === 0) return;
     if (!selectedDoctor) {
       Swal.fire({
         icon: "error",
@@ -180,6 +195,33 @@ const Calendario = () => {
         icon: "info",
         title: "Horario no disponible",
         text: "El horario seleccionado ya está reservado.",
+      });
+      return;
+    }
+
+    const yaReservado = patientAppointments.some(
+      (appointment) =>
+        appointment.id_paciente === id_paciente &&
+        fechaSeleccionada.isSame(moment(appointment.start).startOf("minute"))
+    );
+
+    if (yaReservado) {
+      let citayaresevada = patientAppointments.find(
+        (appointment) =>
+          appointment.id_paciente === id_paciente &&
+          fechaSeleccionada.isSame(moment(appointment.start).startOf("minute"))
+      );
+      let doctorconcita = doctors.find(
+        (doc) => doc.id_usuario === citayaresevada.id_especialista
+      );
+      Swal.fire({
+        icon: "info",
+        title: doctorconcita
+          ? `Paciente con cita, doctor ${doctorconcita.nombre}`
+          : "paciente con cita reservada",
+        text: doctorconcita
+          ? ` el ${fechaSeleccionada.format("DD-MM-yy HH:mm")}`
+          : "Solo puede tener una cita a la vez.",
       });
       return;
     }

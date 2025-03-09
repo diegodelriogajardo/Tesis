@@ -149,7 +149,7 @@ const Atenciones = () => {
           <Modal.Title>Detalles de la Atención</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {detalleAtencion ? (
+          {detalleAtencion && detalleAtencion.diagnosticos.length > 0 ? (
             <>
               <h5>Diagnósticos:</h5>
               {detalleAtencion.diagnosticos.map((diagnostico, index) => (
@@ -184,8 +184,10 @@ const Atenciones = () => {
                 </div>
               ))}
             </>
+          ) : detalleAtencion ? (
+            <p>Cita terminada en Derivacion, diagnosticos no disponibles.</p>
           ) : (
-            <p>Cargando detalles...</p>
+            <p>No se encontraron diagnósticos</p>
           )}
         </Modal.Body>
         <Modal.Footer>

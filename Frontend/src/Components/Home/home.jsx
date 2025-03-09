@@ -8,20 +8,34 @@ const Home = () => {
   const handleReservaClick = () => {
     navigate("/calendario");
   };
+  const handleRegistrar = () => {
+    navigate("/registro");
+  };
   return (
     <Container
       fluid
       className="p-0 h-100"
       style={{ display: "flex", flexDirection: "column" }}
     >
-      {/* Encabezado */}
-      <div className="gradientePrimary text-white text-center py-5">
-        <h1>Bienvenidos a la Plataforma de Atención</h1>
-        <p className="lead">
-          Mejorando la calidad de vida de personas con dependencia moderada a
-          severa
-        </p>
+      <div
+        className="gradientePrimary text-white text-center py-5"
+        style={{ display: "flex", padding: "0px 3rem" }}
+      >
+        <div style={{ alignSelf: "center", flexGrow: 1 }}>
+          {/* Encabezado */}
+          <h1>Bienvenidos a la Plataforma de Atención</h1>
+          <p className="lead">
+            Mejorando la calidad de vida de personas con dependencia moderada a
+            severa
+          </p>
+        </div>
+        <div style={{ justifySelf: "flex-end", alignSelf: "center" }}>
+          <Button onClick={handleReservaClick} variant="secondary" size="lg">
+            Ingresar
+          </Button>
+        </div>
       </div>
+
       <div
         style={{
           flexGrow: 1,
@@ -74,8 +88,9 @@ const Home = () => {
             Contáctanos y encuentra la mejor solución para ti y tus seres
             queridos.
           </p>
-          <Button onClick={handleReservaClick} variant="primary" size="lg">
-            Ingresar
+
+          <Button onClick={handleRegistrar} variant="secondary" size="lg">
+            Registrar
           </Button>
         </div>
       </div>

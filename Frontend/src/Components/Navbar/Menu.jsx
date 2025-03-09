@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Navbar, Nav } from "react-bootstrap";
 import { useAuth } from "../../auth/auth";
 import { useNavigate } from "react-router-dom";
-
+import "./navbar.css";
 export const Menu = () => {
   const usuario = localStorage.getItem("usuario");
   let newUser1 = null;
@@ -26,8 +26,8 @@ export const Menu = () => {
   };
 
   return (
-    <div>
-      <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
+    <div className="gradientePrimary text-white text-center ">
+      <Navbar expand="lg" className="mb-4">
         <div
           style={{
             padding: "0 10px",
@@ -36,7 +36,7 @@ export const Menu = () => {
             justifyContent: "space-between",
           }}
         >
-          <Navbar.Brand href="/">
+          <Navbar.Brand href="/tesis/">
             Plataforma De Atención Domiciliaria
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -44,40 +44,49 @@ export const Menu = () => {
             <Nav className="ms-auto">
               {rol === "paciente" && (
                 <>
-                  <Nav.Link href="/tesis/#/calendario">Agendar Cita</Nav.Link>
-                  <Nav.Link href="/tesis/#/atenciones">Mis Atenciones</Nav.Link>
-                  <Nav.Link onClick={handleLogout}>Cerrar Sesión</Nav.Link>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "right",
-                      width: "100%",
-                    }}
-                  >
-                    <Nav.Link href="/tesis/#/perfil">
+                  <ButtonLink href="/tesis/#/calendario">
+                    <i class="bi bi-calendar"></i>
+                    <span>Agendar Cita</span>
+                  </ButtonLink>
+                  <ButtonLink href="/tesis/#/atenciones">
+                    <i class="bi bi-journal-text"></i>
+                    <span>Mis Atenciones</span>
+                  </ButtonLink>
+                  <ButtonLink onClick={handleLogout}>
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Cerrar Sesión</span>
+                  </ButtonLink>
+                  <div className="perfil-container">
+                    <ButtonLink href="/tesis/#/perfil">
+                      <i className="bi bi-person"></i>
                       {JSON.parse(usuario).nombre}
-                    </Nav.Link>
+                    </ButtonLink>
                   </div>
                 </>
               )}
               {rol === "especialista" && (
                 <>
-                  <Nav.Link href="/tesis/#/calendario">Mi Agenda</Nav.Link>
-                  <Nav.Link href="/tesis/#/citas">Mis Citas</Nav.Link>
-                  <Nav.Link href="/tesis/#/pacientes">Pacientes</Nav.Link>
-                  <Nav.Link onClick={handleLogout}>Cerrar Sesión</Nav.Link>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "right",
-                      width: "100%",
-                    }}
-                  >
-                    <Nav.Link href="/tesis/#/perfil">
+                  <ButtonLink href="/tesis/#/calendario">
+                    <i class="bi bi-calendar"></i>
+                    <span>Mi Agenda</span>
+                  </ButtonLink>
+                  <ButtonLink href="/tesis/#/citas">
+                    <i class="bi bi-journal-text"></i>
+                    <span>Mis Citas</span>
+                  </ButtonLink>
+                  <ButtonLink href="/tesis/#/pacientes">
+                    <i class="bi bi-people"></i>
+                    <span>Pacientes</span>
+                  </ButtonLink>
+                  <ButtonLink onClick={handleLogout}>
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Cerrar Sesión</span>
+                  </ButtonLink>
+                  <div className="perfil-container">
+                    <ButtonLink href="/tesis/#/perfil">
+                      <i className="bi bi-person"></i>
                       {JSON.parse(usuario).nombre}
-                    </Nav.Link>
+                    </ButtonLink>
                   </div>
                 </>
               )}
@@ -85,6 +94,32 @@ export const Menu = () => {
           </Navbar.Collapse>
         </div>
       </Navbar>
+    </div>
+  );
+};
+
+const ButtonLink = ({ children, ...props }) => {
+  return (
+    <div
+      style={{
+        padding: "0 10px",
+        border: "1px solid black",
+        boxShadow: "0 0 5px rgba(0,0,0,0.5)",
+        opacity: "0.8",
+        borderRadius: "5px",
+        margin: "0 5px",
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        width: "100%",
+      }}
+    >
+      <Nav.Link
+        {...props}
+        style={{ gap: "10px", display: "flex", alignItems: "center" }}
+      >
+        {children}
+      </Nav.Link>
     </div>
   );
 };

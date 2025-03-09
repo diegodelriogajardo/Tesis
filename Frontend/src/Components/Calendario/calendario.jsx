@@ -143,8 +143,19 @@ const Calendario = () => {
   const slotpropgetter = (date) => {
     const fechaActualAjustada = moment(date);
     const isPastDate = fechaActualAjustada.isBefore(moment(), "hour");
-    const isInaccess =
-      fechaActualAjustada.hour() > 16 || fechaActualAjustada.hour() < 8;
+    let isInaccess =
+      fechaActualAjustada.hour() > 16 ||
+      fechaActualAjustada.hour() < 8 ||
+      fechaActualAjustada.day() === 0;
+
+    if (fechaActualAjustada.day() === 6) {
+      // si es sabado
+      isInaccess =
+        fechaActualAjustada.hour() < 8 ||
+        fechaActualAjustada.hour() > 14 ||
+        isInaccess;
+    }
+
     if (isPastDate || isInaccess) {
       return {
         className: "past-day",
@@ -159,10 +170,17 @@ const Calendario = () => {
 
   const handleSlotSelection = ({ start }) => {
     if (usuario.rol === "especialista") return;
-    const fechaSeleccionada = moment(start);
-    if (fechaSeleccionada < moment()) return;
+
+    const fechaSeleccionada = moment(start).startOf("minute");
+    const ahora = moment().startOf("minute");
+
+    if (fechaSeleccionada.isBefore(ahora)) return;
     if (fechaSeleccionada.hour() > 16 || fechaSeleccionada.hour() < 8) return;
 
+    if (fechaSeleccionada.day() === 6) {
+      if (fechaSeleccionada.hour() > 14) return;
+    }
+    if (fechaSeleccionada.day() === 0) return;
     if (!selectedDoctor) {
       Swal.fire({
         icon: "error",
@@ -172,13 +190,39 @@ const Calendario = () => {
       return;
     }
 
-    const isTimeAvailable = !patientAppointments.some(
+    const isTimeAvailable = patientAppointments.some(
       (appointment) =>
         appointment.id_especialista === selectedDoctor.id_usuario &&
-        moment(start).isSame(appointment.start)
+        fechaSeleccionada.isSame(moment(appointment.start).startOf("minute"))
     );
 
-    if (!isTimeAvailable) {
+    const yaReservado = patientAppointments.some(
+      (appointment) =>
+        appointment.id_paciente === usuario.id_usuario &&
+        fechaSeleccionada.isSame(moment(appointment.start).startOf("minute"))
+    );
+
+    if (yaReservado) {
+      let citayaresevada = patientAppointments.find(
+        (appointment) =>
+          appointment.id_paciente === usuario.id_usuario &&
+          fechaSeleccionada.isSame(moment(appointment.start).startOf("minute"))
+      );
+      let doctorconcita = doctors.find(
+        (doc) => doc.id_usuario === citayaresevada.id_especialista
+      );
+      Swal.fire({
+        icon: "info",
+        title: doctorconcita
+          ? `Ya tienes una cita con el doctor ${doctorconcita.nombre}`
+          : "Ya tiene una cita reservada",
+        text: doctorconcita
+          ? ` el ${fechaSeleccionada.format("DD-MM-yy HH:mm")}`
+          : "Solo puede tener una cita a la vez.",
+      });
+      return;
+    }
+    if (isTimeAvailable) {
       Swal.fire({
         icon: "info",
         title: "Horario no disponible",
@@ -190,7 +234,6 @@ const Calendario = () => {
     setSelectedSlot({ start });
     setShowModal(true);
   };
-
   const handleEventSelection = (event) => {
     if (usuario.rol === "especialista") return;
 

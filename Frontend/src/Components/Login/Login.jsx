@@ -9,6 +9,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showPass, setShowPass] = useState(false);
   const { login } = useAuth();
   //console.log("useAuth:"+useAuth())
   const navigate = useNavigate(); // se crea una constante para llamar a la funcion y luego llamar a la constante como funcion xd
@@ -69,15 +70,32 @@ const Login = () => {
               placeholder="Email"
               aria-label="email"
             ></input>
+            <div class="input-group mb-3">
+              <input
+                type={showPass ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="form-control formulario"
+                placeholder="Clave"
+                aria-label="Clave"
+              ></input>
+              <div
+                class="input-group-prepend"
+                onClick={() => {
+                  setShowPass((prev) => !prev);
+                }}
+                style={{ cursor: "pointer" }}
+              >
+                <span class="input-group-text" id="basic-addon1">
+                  {showPass ? (
+                    <i class="bi bi-eye"></i>
+                  ) : (
+                    <i class="bi bi-eye-slash"></i>
+                  )}
+                </span>
+              </div>
+            </div>
 
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="form-control formulario"
-              placeholder="Clave"
-              aria-label="Clave"
-            ></input>
             <button
               onClick={handleLogin}
               className="btn btn-secondary mt-4 boton"

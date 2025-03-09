@@ -17,7 +17,7 @@ import FinalizarAtencion from "./Components/FinalizarAtencion/FinalizarAtencion.
 import Pacientes from "./Components/Paciente/Pacientes.jsx";
 import DetalleCita from "./Components/DetalleCita/DetalleCita.jsx";
 import Reagendamiento from "./Components/Reagendamiento/Reagendamiento.jsx";
-
+import "bootstrap-icons/font/bootstrap-icons.css";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
